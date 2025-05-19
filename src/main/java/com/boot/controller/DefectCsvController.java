@@ -29,7 +29,8 @@ public class DefectCsvController {
     
 
     @GetMapping("/recall/download")
-    public void downloadRecallCsv(@RequestParam(defaultValue = "1") int pageNum,
+//    @RequestParam(defaultValue = "1")
+    public void downloadRecallCsv( int pageNum,
             @RequestParam(defaultValue = "10") int amount,
             HttpServletResponse response) {
 //        int pageNum = (cri != null && cri.getPageNum() > 0) ? cri.getPageNum() : 1;
@@ -38,6 +39,8 @@ public class DefectCsvController {
         try {
             List<Defect_DetailsDTO> list = defectCsvService.getDefectsByPage(pageNum, amount);
 
+            log.info("📦 CSV 다운로드 요청 - pageNum: {}, amount: {}, 데이터 수: {}", pageNum, amount, list.size());
+            
             String filename = URLEncoder.encode("recall_list.csv", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
             response.setContentType("text/csv; charset=UTF-8");
             response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + filename);
@@ -53,6 +56,7 @@ public class DefectCsvController {
             writer.write("제품명,제조사,제조기간,모델명,리콜유형,연락처,추가정보\n");
 
             for (Defect_DetailsDTO dto : list) {
+            	log.info("▶ CSV 행 데이터: {}", dto);
                 writer.write(String.join(",",
                     csvEscape(dto.getProduct_name()),
                     csvEscape(dto.getManufacturer()),

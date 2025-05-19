@@ -37,17 +37,18 @@ public class DefectCsvServiceImpl implements DefectCsvService{
 	        return getAllDefects();  // DAO 인터페이스의 메서드를 내부에서 호출
 	    }
 
-	    @Override
-	    public List<Defect_DetailsDTO> getDefectsByPage(int pageNum, int amount) {
-	        int offset = (pageNum - 1) * amount;
-	        log.info("getDefectsByPage 호출 - pageNum: {}, amount: {}, offset: {}", pageNum, amount, offset);
-	        Map<String, Object> params = new HashMap<>();
-	        params.put("offset", offset);
-	        params.put("limit", amount);
-	        List<Defect_DetailsDTO> list = defectCsvDAO.getDefectsByPage(params);
-	        log.info("조회된 데이터 개수: {}", list.size());
-	        return list;
-	    }
+    @Override
+    public List<Defect_DetailsDTO> getDefectsByPage(int pageNum, int amount) {
+    	
+        int offset = (pageNum - 1) * amount;
+        log.info("getDefectsByPage 호출 - pageNum: {}, amount: {}, offset: {}", pageNum, amount, offset);
+        Map<String, Object> params = new HashMap<>();
+        params.put("offset", offset);
+        params.put("limit", amount);
+        List<Defect_DetailsDTO> list = defectCsvDAO.getDefectsByPage(params);
+        log.info("조회된 데이터 개수: {}", list.size());
+        return list;
+    }
 
 	@Override
 	public void saveDefects(List<Defect_DetailsDTO> defects) {

@@ -360,6 +360,8 @@
     const amount = form.querySelector('input[name="amount"]').value;
     const contextPath = '${pageContext.request.contextPath}';
     const url = `${contextPath}/recall/download?pageNum=${pageNum}&amount=${amount}`;
+	
+	console.log("✅ 다운로드 요청 URL:", url);
     window.location.href = url;
   });
   </script>
