@@ -25,6 +25,7 @@ import com.boot.dto.Criteria;
 import com.boot.dto.DefectReportSummaryDTO;
 import com.boot.dto.Defect_DetailsDTO;
 import com.boot.dto.ManufacturerRecallDTO;
+import com.boot.dto.SyncDTO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,7 +50,8 @@ public class RecallServiceImpl implements RecallService{
         return XmlParserUtil.getTotalCount(xml);
 	}
 	
-	private String fetchXmlFromApi(Criteria cri, String cntntsId) throws Exception {
+	@Override
+	public String fetchXmlFromApi(Criteria cri, String cntntsId) throws Exception {
         String apiUrl = "https://www.consumer.go.kr/openapi/recall/contents/index.do"
                 + "?serviceKey=" + serviceKey
                 + "&pageNo=" + cri.getPageNum()
@@ -101,7 +103,8 @@ public class RecallServiceImpl implements RecallService{
 	            defectDetails.setModel_name(getTagValue("modlNmInfo", element));
 	            defectDetails.setRecall_type(getTagValue("recallSe", element));
 	            defectDetails.setContact_info(getTagValue("recallEntrpsInfo", element));
-	            defectDetails.setAdditional_info(getTagValue("etcInfo", element));
+//	            defectDetails.setAdditional_info(getTagValue("etcInfo", element));
+	            defectDetails.setAdditional_info(stripHtmlTags(getTagValue("etcInfo", element)));
 
 	            defectList.add(defectDetails);
 	        }
@@ -109,6 +112,12 @@ public class RecallServiceImpl implements RecallService{
 	        return defectList;
 	    }
 
+	    // 모든 <태그> 제거
+	    private static String stripHtmlTags(String input) {
+	    	if (input == null) return "";
+	    	return input.replaceAll("<[^>]*>", "").trim();
+	    }
+	    
 	    // 특정 태그의 값을 추출하는 helper method
 	    private static String getTagValue(String tag, Element element) {
 	        NodeList list = element.getElementsByTagName(tag);
@@ -123,7 +132,7 @@ public class RecallServiceImpl implements RecallService{
 	        Document doc = builder.parse(new InputSource(new StringReader(xml)));
 	        
 	        // <totalCount> 태그 값 가져오기
-	        NodeList nodeList = doc.getElementsByTagName("totalCount");
+	        NodeList nodeList = doc.getElementsByTagName("allCnt");
 	        if (nodeList.getLength() > 0) {
 	            return Integer.parseInt(nodeList.item(0).getTextContent());
 	        }
@@ -171,4 +180,46 @@ public class RecallServiceImpl implements RecallService{
 //	    params.put("end_year", endYear);
 //	    return dao.getdefect_reports_count(params);
 //	}
+	
+	
+	// API -> DB 저장
+	@Override
+	public void saveApiDataToDB(List<Defect_DetailsDTO> apiList) {
+		RecallStaticDAO dao = sqlSession.getMapper(RecallStaticDAO.class);
+
+		for (Defect_DetailsDTO dto : apiList) {
+			if (dao.checkDuplicate(dto) == 0) {
+				dao.insertDefect(dto);
+			}
+		}
+	}
+	
+	@Override
+	public SyncDTO syncApiDataWithDB(List<Defect_DetailsDTO> apiList) {
+		RecallStaticDAO dao = sqlSession.getMapper(RecallStaticDAO.class);
+		SyncDTO result = new SyncDTO();
+		int inserted = 0, updated = 0, skipped = 0;
+
+		for (Defect_DetailsDTO dto : apiList) {
+			dto.setHash_code(dto.generateHashCode());
+
+			Defect_DetailsDTO dbData = dao.findByKey(dto);
+
+			if (dbData == null) {
+				dao.insertDefect(dto);
+				inserted++;
+			} else if (!dto.getHash_code().equals(dbData.getHash_code())) {
+				dao.updateDefect(dto);
+				updated++;
+			} else {
+				skipped++;
+			}
+		}
+
+		result.setInserted(inserted);
+		result.setUpdated(updated);
+		result.setSkipped(skipped);
+		return result;
+	}
+
 }
