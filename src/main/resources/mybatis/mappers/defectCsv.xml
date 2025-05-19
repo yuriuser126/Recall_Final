@@ -1,0 +1,26 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boot.dao.DefectCsvDAO">
+
+	<insert id="insertDefect" parameterType="com.boot.dto.Defect_DetailsDTO" flushCache="true">
+    INSERT INTO defect_details
+    (product_name, manufacturer, manufacturing_period, model_name, recall_type, contact_info, additional_info)
+    VALUES
+    (#{product_name}, #{manufacturer}, #{manufacturing_period}, #{model_name}, #{recall_type}, #{contact_info}, #{additional_info})
+	</insert>
+
+    
+     <select id="getDefectsByPage" parameterType="map" resultType="com.boot.dto.Defect_DetailsDTO">
+    SELECT id, product_name, manufacturer, manufacturing_period, model_name, recall_type, contact_info, additional_info
+    FROM defect_details
+    ORDER BY id
+    LIMIT #{limit} OFFSET #{offset}
+	</select>
+    
+    
+    
+
+    
+</mapper>

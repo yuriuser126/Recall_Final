@@ -203,6 +203,21 @@
 			</table>
 		</div>
 		
+<!--		<form method="get" action="/recall/download"  >-->
+<!--		    <button type="submit">CSV 다운로드</button>-->
+<!--		</form>-->
+		
+<!--		<a href="/recall/download" download="recall_list.csv">-->
+<!--		    <button type="button">CSV 다운로드</button>-->
+<!--		</a>-->
+
+<!--<button onclick="location.href='/recall/download'">CSV 다운로드</button>-->
+<a href="#" onclick="downloadCSV()">CSV 다운로드</a>
+
+		
+	
+
+		
 
 		<!-- Blog Pagination Section -->
 		<section id="blog-pagination" class="blog-pagination section">
@@ -328,6 +343,22 @@
 
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
+  
+  <script> //Csv 다운로드 확실히 다운로드
+	function downloadCSV() {
+	   const urlParams = new URLSearchParams(window.location.search);
+	   const pageNum = urlParams.get("pageNum") || 1;
+	   const amount = urlParams.get("amount") || 10;
+
+	   const link = document.createElement('a');
+	   link.href = `/recall/download?pageNum=${pageNum}&amount=${amount}`;
+	   link.download = 'recall_list.csv';
+	   document.body.appendChild(link);
+	   link.click();
+	   document.body.removeChild(link);
+	 }
+  </script>
+  
 <!--
   
   <script>
