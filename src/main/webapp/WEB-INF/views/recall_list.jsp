@@ -203,6 +203,30 @@
 			</table>
 		</div>
 		
+<!--		<form method="get" action="/recall/download"  >-->
+<!--		    <button type="submit">CSV 다운로드</button>-->
+<!--		</form>-->
+		
+<!--		<a href="/recall/download" download="recall_list.csv">-->
+<!--		    <button type="button">CSV 다운로드</button>-->
+<!--		</a>-->
+
+<!--<button onclick="location.href='/recall/download'">CSV 다운로드</button>-->
+
+<!--<input type="hidden" id="pageNum" value="${cri.pageNum}">-->
+<!--<input type="hidden" id="amount" value="${cri.amount}">-->
+
+
+<!--<a href="#" onclick="downloadCSV(); return false;">CSV 다운로드</a>-->
+<!--<button type="button" onclick="downloadCSV()">CSV 다운로드</button>-->
+
+<button type="button" id="downloadBtn">CSV 다운로드</button>
+
+
+		
+	
+
+		
 
 		<!-- Blog Pagination Section -->
 		<section id="blog-pagination" class="blog-pagination section">
@@ -328,6 +352,35 @@
 
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
+  
+  <script>
+  document.getElementById('downloadBtn').addEventListener('click', function() {
+    const form = document.getElementById('actionForm');
+    const pageNum = form.querySelector('input[name="pageNum"]').value;
+    const amount = form.querySelector('input[name="amount"]').value;
+    const contextPath = '${pageContext.request.contextPath}';
+    const url = `${contextPath}/recall/download?pageNum=${pageNum}&amount=${amount}`;
+	
+	console.log("✅ 다운로드 요청 URL:", url);
+    window.location.href = url;
+  });
+  </script>
+  
+<!--  <script>-->
+<!--    document.getElementById('downloadBtn').addEventListener('click', function() {-->
+<!--      console.log("downloadCSV 함수 실행됨");-->
+<!--      alert("downloadCSV 함수 실행됨");-->
+
+<!--      const urlParams = new URLSearchParams(window.location.search);-->
+<!--      const pageNum = urlParams.get("pageNum") || 1;-->
+<!--      const amount = urlParams.get("amount") || 10;-->
+
+<!--      const url = `/recall/download?pageNum=${pageNum}&amount=${amount}`;-->
+<!--      window.location.href = url;-->
+<!--    });-->
+<!--  </script>-->
+  
+
 <!--
   
   <script>

@@ -6,6 +6,7 @@
 	<mappers>
 		<mapper resource="mybatis/mappers/page.xml"/>
 		<mapper resource="mybatis/mappers/defect.xml"/>
+		<mapper resource="mybatis/mappers/defectCsv.xml"/>
 		<mapper resource="mybatis/mappers/defectList.xml"/>
 		<mapper resource="mybatis/mappers/recallstatic.xml"/>
 		<mapper resource="mybatis/mappers/faqann.xml"/>

@@ -15,8 +15,8 @@
     </select>
     
     <insert id="insertDefectDetails">
-		insert into defect_details(id,product_name,manufacturer,manufacturing_period,model_name,recall_type,contact_info,additional_info)
-			values(#{id},#{product_name},#{manufacturer},#{manufacturing_period},#{model_name},#{recall_type},#{contact_info},#{additional_info});
+		insert into defect_details(product_name,manufacturer,manufacturing_period,model_name,recall_type,contact_info,additional_info)
+			values(#{product_name},#{manufacturer},#{manufacturing_period},#{model_name},#{recall_type},#{contact_info},#{additional_info});
     </insert>
     
     
