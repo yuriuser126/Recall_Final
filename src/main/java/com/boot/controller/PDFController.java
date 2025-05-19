@@ -141,5 +141,62 @@ public class PDFController {
     	
     	return "pdf/recall_statics_manafacturer";
     }
+    
+    @GetMapping("/pdf/recall_statics_month_manafacturer")
+    public String recall_statics_month_manafacturer(
+        @RequestParam(required = false) Integer startYear,
+        @RequestParam(required = false) Integer endYear,
+        @RequestParam(required = false) Integer startMonth,
+        @RequestParam(required = false) Integer endMonth,
+        Model model) {
+		
+		log.info("recall_statics_month_manafacturer");
+        Map<String, Object> params = new HashMap<>();
+        params.put("start_year", startYear);
+        params.put("start_month", startMonth);
+        params.put("end_year", endYear);
+        params.put("end_month", endMonth);
+
+//        List<DefectReportSummaryDTO> monthsummaryList = recallService.getDefectReportSummaryByMonth(params);
+//        model.addAttribute("monthsummaryList", monthsummaryList);
+        List<ManufacturerRecallDTO> stats = recallService.getYearlyRecallStatsByMonth(params);
+        model.addAttribute("recallStats", stats);
+        Map<String, List<ManufacturerRecallDTO>> grouped = stats.stream()
+        	    .collect(Collectors.groupingBy(ManufacturerRecallDTO::getCar_manufacturer));
+
+        	model.addAttribute("groupedRecallStats", grouped);
+        	String predefinedQuestion = "이 자료들은 월,연도별 리콜현황 제조사별에 관한 자료인데, car_manufacturer는 제조사야. <br><br> 제조사별 리콜 위험 점수 내용,<br> 제조사별 주요 리콜 현황 내용,<br> 자동차 리콜의 중요성을 작성해줘. 각 항목은 <p> 태그로 감싸서 출력해줘.```html``` 로는 감쌀 필요 없어" // 미리 지정할 질문
+        			+ grouped;
+        	
+        	String geminiAnswer = geminiService.askGemini(predefinedQuestion);
+        	model.addAttribute("answer", geminiAnswer);
+        	
+        return "pdf/recall_statics_month_manafacturer"; 
+    }
+    @GetMapping("/pdf/recall_statics_month_summaryList")
+    public String recall_statics_month_summaryList(
+    		@RequestParam(required = false) Integer startYear,
+    		@RequestParam(required = false) Integer endYear,
+    		@RequestParam(required = false) Integer startMonth,
+    		@RequestParam(required = false) Integer endMonth,
+    		Model model) {
+    	
+    	log.info("recall_statics_month_summaryList");
+    	Map<String, Object> params = new HashMap<>();
+    	params.put("start_year", startYear);
+    	params.put("start_month", startMonth);
+    	params.put("end_year", endYear);
+    	params.put("end_month", endMonth);
+    	
+        List<DefectReportSummaryDTO> monthsummaryList = recallService.getDefectReportSummaryByMonth(params);
+        model.addAttribute("monthsummaryList", monthsummaryList);
+    	String predefinedQuestion = "이 자료들은 연도별 리콜현황에 관한 자료인데, domesticmodelcount는 국산 차종, importedmodelcount는 수입 차종이야. <br><br> 국산과 수입에 의거한 리콜 위험 점수 내용,<br> 주요 리콜 국산과 수입에 의거한 현황 내용,<br> 자동차 리콜의 중요성을 작성해줘. 각 항목은 <p> 태그로 감싸서 출력해줘.```html``` 로는 감쌀 필요 없어" // 미리 지정할 질문
+    			+ monthsummaryList;
+    	
+    	String geminiAnswer = geminiService.askGemini(predefinedQuestion);
+    	model.addAttribute("answer", geminiAnswer);
+    	
+    	return "pdf/recall_statics_month_summaryList"; 
+    }
 	
 }
