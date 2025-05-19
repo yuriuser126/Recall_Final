@@ -1,5 +1,11 @@
 package com.boot.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired; // @Autowired 어노테이션 사용 [21, 24, 27, 28, 30]
 import org.springframework.stereotype.Controller; // @Controller 어노테이션 사용 [18-20]
 import org.springframework.ui.Model; // Model 객체 사용 (뷰에 데이터 전달) [24, 34]
@@ -9,9 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam; // @RequestParam 어노테이션 사용 [24]
 
 import com.boot.service.GeminiService;
+import com.boot.service.PdfGenerationService;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequestMapping("/chat")
+@Slf4j
 public class GeminiController {
 	@Autowired
     private GeminiService geminiService; // 인터페이스 타입으로 주입
@@ -40,6 +50,49 @@ public class GeminiController {
         model.addAttribute("answer", answer);
 
         return "chat"; // 결과를 보여줄 뷰 이름 반환 (예: chat.jsp) [24, 34, 35]
+    }
+    
+    
+    //여기부터 pdf parser
+    @Autowired
+    private PdfGenerationService pdfGenerationService;
+    
+    @GetMapping("/generatePdfForm")
+    public String showGeneratePdfForm() {
+        return "generatePdfForm"; // PDF 생성을 위한 폼 (HTML 입력 또는 URL 입력)
+    }
+
+    @PostMapping("/generatePdfFromHtml")
+    public void generatePdfFromHtml(@RequestParam("htmlContent") String htmlContent, HttpServletResponse response) throws IOException, InterruptedException {
+    	log.info("htmlContent"+htmlContent);
+        File pdfFile = pdfGenerationService.generatePdfFromHtml(htmlContent, "generated_from_html.pdf");
+        sendFileToClient(pdfFile, response, "generated_from_html.pdf");
+    }
+
+    @GetMapping("/generatePdfFromUrl")
+    public void generatePdfFromUrl(@RequestParam("url") String url, HttpServletResponse response) throws IOException, InterruptedException {
+        File pdfFile = pdfGenerationService.generatePdfFromUrl(url, "generated_from_url.pdf");
+        sendFileToClient(pdfFile, response, "generated_from_url.pdf");
+    }
+
+    private void sendFileToClient(File file, HttpServletResponse response, String fileName) throws IOException {
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+        response.setContentLength((int) file.length());
+
+        try (InputStream inputStream = new FileInputStream(file);
+             java.io.OutputStream outputStream = response.getOutputStream()) {
+            byte[] buffer = new byte[8192]; // 버퍼 크기 설정 (적절한 크기로 조정 가능)
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            outputStream.flush();
+        } finally {
+            if (file.exists()) {
+                file.delete(); // 임시 파일 삭제
+            }
+        }
     }
 	
 }

@@ -38,5 +38,21 @@
 
     <%-- JavaScript 프레임워크 (예: Bootstrap JS) 추가 (소스 외) --%>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script> <%-- [39-41]의 Bootstrap 예시 참고 --%>
+	
+	
+	<h1>HTML 내용으로 PDF 생성</h1>
+    <form method="post" action="/generatePdfFromHtml">
+        <textarea name="htmlContent" rows="10" cols="80"></textarea><br>
+        <button type="submit">HTML로 PDF 생성</button>
+    </form>
+
+    <hr>
+
+    <h1>URL에서 PDF 생성</h1>
+    <form method="get" action="/generatePdfFromUrl">
+        URL: <input type="text" name="url" size="80"><br>
+        <button type="submit">URL로 PDF 생성</button>
+    </form>
+	
 </body>
 </html>
