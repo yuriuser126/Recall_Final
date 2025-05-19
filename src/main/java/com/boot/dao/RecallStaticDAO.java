@@ -24,7 +24,8 @@ public interface RecallStaticDAO {
 	
 	Defect_DetailsDTO findByKey(Defect_DetailsDTO dto);
 	void updateDefect(Defect_DetailsDTO dto);
-
+	List<Defect_DetailsDTO> getAllRecalls();
+	Defect_DetailsDTO findById(int id);
 }
 
 
