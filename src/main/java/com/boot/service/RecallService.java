@@ -21,6 +21,10 @@ public interface RecallService {
     List<ManufacturerRecallDTO> getYearlyRecallStatsByMonth(Map<String, Object> paramMap);
     
     void saveApiDataToDB(List<Defect_DetailsDTO> apiList); // DB 저장
-    SyncDTO syncApiDataWithDB(List<Defect_DetailsDTO> apiList);
+    SyncDTO syncApiDataWithDB(List<Defect_DetailsDTO> apiList); // DB 동기화
+
+    List<Defect_DetailsDTO> getAllRecalls(); // DB의 recall 모두 select
+    Defect_DetailsDTO getRecallById(int id); // DB의 recall 을 id 기반 select
+    List<Integer> getSimilarRecallIds(int targetId);
 
 }

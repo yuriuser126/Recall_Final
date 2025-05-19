@@ -9,5 +9,6 @@
 		<mapper resource="mybatis/mappers/defectList.xml"/>
 		<mapper resource="mybatis/mappers/recallstatic.xml"/>
 		<mapper resource="mybatis/mappers/faqann.xml"/>
+		<mapper resource="mybatis/mappers/recallCount.xml"/>
 	</mappers>
 </configuration>

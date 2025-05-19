@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -103,7 +106,8 @@ public class RecallServiceImpl implements RecallService{
 	            defectDetails.setModel_name(getTagValue("modlNmInfo", element));
 	            defectDetails.setRecall_type(getTagValue("recallSe", element));
 	            defectDetails.setContact_info(getTagValue("recallEntrpsInfo", element));
-	            defectDetails.setAdditional_info(getTagValue("etcInfo", element));
+//	            defectDetails.setAdditional_info(getTagValue("etcInfo", element));
+	            defectDetails.setAdditional_info(stripHtmlTags(getTagValue("etcInfo", element)));
 
 	            defectList.add(defectDetails);
 	        }
@@ -111,6 +115,12 @@ public class RecallServiceImpl implements RecallService{
 	        return defectList;
 	    }
 
+	    // 모든 <태그> 제거
+	    private static String stripHtmlTags(String input) {
+	    	if (input == null) return "";
+	    	return input.replaceAll("<[^>]*>", "").trim();
+	    }
+	    
 	    // 특정 태그의 값을 추출하는 helper method
 	    private static String getTagValue(String tag, Element element) {
 	        NodeList list = element.getElementsByTagName(tag);
@@ -187,6 +197,7 @@ public class RecallServiceImpl implements RecallService{
 		}
 	}
 	
+	// API -> DB 동기화
 	@Override
 	public SyncDTO syncApiDataWithDB(List<Defect_DetailsDTO> apiList) {
 		RecallStaticDAO dao = sqlSession.getMapper(RecallStaticDAO.class);
@@ -213,6 +224,31 @@ public class RecallServiceImpl implements RecallService{
 		result.setUpdated(updated);
 		result.setSkipped(skipped);
 		return result;
+	}
+
+	
+	@Override
+	public List<Integer> getSimilarRecallIds(int targetId) {
+		String apiUrl = "http://localhost:5000/recommend?id=" + targetId;
+
+		RestTemplate restTemplate = new RestTemplate();
+
+		ResponseEntity<Integer[]> response = restTemplate.getForEntity(apiUrl, Integer[].class);
+		Integer[] ids = response.getBody();
+
+		return Arrays.asList(ids);
+	}
+	
+	@Override
+	public List<Defect_DetailsDTO> getAllRecalls() {
+		RecallStaticDAO dao = sqlSession.getMapper(RecallStaticDAO.class);
+		return dao.getAllRecalls();
+	}
+	
+	@Override
+	public Defect_DetailsDTO getRecallById(int id) {
+		RecallStaticDAO dao = sqlSession.getMapper(RecallStaticDAO.class);
+		return dao.findById(id);
 	}
 
 }

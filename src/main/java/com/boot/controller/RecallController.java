@@ -1,5 +1,9 @@
 package com.boot.controller;
 
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -108,9 +113,11 @@ public class RecallController {
 	public String recall_list(Criteria cri, Model model) throws Exception {
 	    String cntntsId = "0301"; 
 	    List<Defect_DetailsDTO> list = recallService.getProductList(cri, cntntsId);
-	    //923개의 리콜이 xml 92개로 나눠져 있어서 일단 하드코딩했다
-//	    int total = recallService.getTotalCount(cri, cntntsId);
-	    int total = 923;
+	    // 923개의 리콜이 xml 92개로 나눠져 있어서 일단 하드코딩했다
+	    // int total = 923;
+	    // totalcount 값을 알아서 적용하도록 수정
+	    String firstXml = recallService.fetchXmlFromApi(cri, cntntsId);
+	    int total = XmlParserUtil.getTotalCount(firstXml);
 
 	    model.addAttribute("recall_list", list);
 	    model.addAttribute("pageMaker", new PageDTO(total, cri));
@@ -205,6 +212,60 @@ public class RecallController {
 		}
 
 		return "전체 동기화 완료! 총 insert: " + inserted + ", update: " + updated + ", skip: " + skipped;
+	}
+	
+	// 테스트용
+	@GetMapping("/recall/similar/{id}")
+	@ResponseBody
+	public List<Integer> getSimilarRecalls(@PathVariable("id") int id) {
+		return recallService.getSimilarRecallIds(id);
+	}
+
+	// 상세 페이지
+	@GetMapping("/recall/details/{id}")
+	public String getRecallDetail(@PathVariable("id") int id, Model model) {
+		Defect_DetailsDTO recall = recallService.getRecallById(id);
+		List<Integer> similarIds = recallService.getSimilarRecallIds(id);
+
+		model.addAttribute("recall", recall);
+		model.addAttribute("similarIds", similarIds);
+		return "recall_detail";
+	}
+	
+	// CSV 파일로 변환
+	@GetMapping("/recall/export")
+	@ResponseBody
+	public String exportRecallToCsv() {
+		try {
+			List<Defect_DetailsDTO> list = recallService.getAllRecalls(); // 전체 불러오기
+
+//			FileWriter writer = new FileWriter("C:/develop/recall-ai-recommend/recall.csv");
+			OutputStreamWriter writer = new OutputStreamWriter(
+					new FileOutputStream("C:/develop/recall-ai-recommend/recall.csv"),
+					StandardCharsets.UTF_8
+				);
+			writer.write("id,manufacturer,model_name,recall_type,additional_info\n");
+
+			for (Defect_DetailsDTO dto : list) {
+				writer.write(dto.getId() + "," +
+					clean(dto.getManufacturer()) + "," +
+					clean(dto.getModel_name()) + "," +
+					clean(dto.getRecall_type()) + "," +
+					clean(dto.getAdditional_info()) + "\n");
+			}
+
+			writer.close();
+			return "CSV 파일 생성 완료!";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "CSV 생성 실패: " + e.getMessage();
+		}
+	}
+
+	// CSV에 쓸 때 콤마나 개행 제거
+	private String clean(String text) {
+		if (text == null) return "";
+		return text.replaceAll("[\\r\\n,]", " ").trim();
 	}
 
 }
