@@ -9,7 +9,7 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>통계 표시</title>
+  <title>recall_statics_manafacturer</title>
   <script src="${pageContext.request.contextPath}/js/jquery.js"></script>
   <style>
   .year-form {
@@ -96,82 +96,63 @@
 
 <body class="starter-page-page">
 	<main class="main">
-	<h1>연도별 리콜 통계 신고 현황<h1>
-	<h2>결함 신고 요약 통계</h2>
-		<table class="table-summary">
-	      <thead>
-	          <tr>
-	              <th rowspan="2">해당 연도</th>
-	              <th colspan="2">국산자동차</th>
-	              <th colspan="2">수입자동차</th>
-	              <th colspan="2">계</th>
-	          </tr>
-	          <tr>
-	              <th>차종</th>
-	              <th>대수</th>
-	              <th>차종</th>
-	              <th>대수</th>
-	              <th>차종</th>
-	              <th>대수</th>
-	          </tr>
-	      </thead>
-	      <tbody>
-	          <tr>
-				<td>${summary.label}</td>
-				<td>${summary.domesticModelCount}</td>
-				<td>${summary.domesticCount}</td>
-				<td>${summary.domesticModelCount}</td>
-				<td>${summary.importedCount}</td>
-				<td>${summary.totalModelCount}</td>
-				<td>${summary.totalCount}</td>
-	          </tr>
-	      </tbody>
-		</table>
-  
-	<h2>연도별 리콜현황</h2>
-		<table class="table-summary">
-		    <thead>
-			  <tr>
-	              <th rowspan="2">해당 연도</th>
-	              <th colspan="2">국산자동차</th>
-	              <th colspan="2">수입자동차</th>
-	              <th colspan="2">계</th>
-	          </tr>
-		      <tr>
-		        <th>국산 차종</th>
-		        <th>국산 대수</th>
-		        <th>수입 차종</th>
-		        <th>수입 대수</th>
-		        <th>전체 차종</th>
-		        <th>전체 대수</th>
-		      </tr>
-		    </thead>
-		    <tbody>
-				<c:forEach var="item" items="${summaryList}">
-				    <tr>
-				        <td>${item.report_year}</td>
-				        <td>${item.domesticModelCount}</td>
-				        <td>${item.domesticCount}</td>
-				        <td>${item.importedModelCount}</td>
-				        <td>${item.importedCount}</td>
-				        <td>${item.totalModelCount}</td>
-				        <td>${item.totalCount}</td>
-				    </tr>
-				</c:forEach>
-		    </tbody>
-		</table>
+	<h1>연도별 리콜 통계 신고- 제조사별<h1>
+		  <h2>연도별 리콜 요약 통계</h2>
+			<table class="table-summary">
+			  <thead>
+			    <tr>
+			      <th>제조사명</th>
+			      <th>계</th>
+			    </tr>
+			  </thead>
+			  <tbody>
+			    <c:forEach var="entry" items="${groupedRecallStats}">
+			      <tr style="font-weight:bold;">
+			        <td>${entry.key}</td>
+			        <td>
+			          <c:set var="sum" value="0" />
+			          <c:forEach var="recall" items="${entry.value}">
+			            <c:set var="sum" value="${sum + recall.recallCount}" />
+			          </c:forEach>
+			          ${sum}
+			        </td>
+			      </tr>
+			    </c:forEach>
+			  </tbody>
+			</table>
 
-		<%-- Gemini 답변 표시 영역 --%>
-        <div class="card mt-4">
-            <div class="card-header">
-                <h2>Gemini's summarize</h2>
-            </div>
-            <div class="card-body">
-                <%-- Controller에서 Model에 담아 전달한 "answer" 값을 표시 --%>
-                <p class="card-text">${answer}</p>
-            </div>
-        </div>		  
-				  
+			  <h2>연도별 리콜 현황-제조사별</h2>
+			  <table class="table-summary">
+			    <thead>
+			      <tr>
+			        <th>해당 연도</th>
+			        <th>제조사명</th>
+			        <th>계</th>
+			      </tr>
+			    </thead>
+			    <tbody>
+			      <c:forEach var="entry" items="${groupedRecallStats}">
+			        <c:forEach var="recall" items="${entry.value}">
+			          <tr>
+			            <td>${recall.reportYear}</td>
+			            <td>${recall.car_manufacturer}</td>
+			            <td>${recall.recallCount}</td>
+			          </tr>
+			        </c:forEach>
+			      </c:forEach>
+			    </tbody>
+			  </table>
+				<%-- Gemini 답변 표시 영역 --%>
+		        <div class="card mt-4">
+		            <div class="card-header">
+		                <h2>Gemini's summarize</h2>
+		            </div>
+		            <div class="card-body">
+		                <%-- Controller에서 Model에 담아 전달한 "answer" 값을 표시 --%>
+		                <p class="card-text">${answer}</p>
+		            </div>
+		        </div>		  
+						  
   </main>
 
   <footer id="footer" class="footer accent-background">

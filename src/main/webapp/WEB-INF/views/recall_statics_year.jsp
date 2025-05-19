@@ -440,7 +440,7 @@
 							  
 							  
 							      <form method="get" action="/generatePdfFromUrl">
-							          <input type="hidden" name="url" value="http://localhost:8485/recall_statics_pdf?startYear=${param.startYear}&endYear=${param.endYear}"><br>
+							          <input type="hidden" name="url" value="http://localhost:8485/pdf/recall_statics_summaryList?startYear=${param.startYear}&endYear=${param.endYear}"><br>
 									  <button type="submit" class="btn-get-started pdf-download-button" data-tooltip="pdf를 다운받으시면, 자료에 대한 gemini의 summarize도 포함됩니다!">pdf다운로드</button>
 							      </form>
 							  
@@ -526,6 +526,12 @@
 									<h2>제조사별 리콜 점유율 (도넛 그래프)</h2>
 								    <canvas id="manufacturerDonutChart" width="400" height="400"></canvas>
 								  </div>
+							  
+								  <form method="get" action="/generatePdfFromUrl">
+								      <input type="hidden" name="url" value="http://localhost:8485/pdf/recall_statics_manafacturer?startYear=${param.startYear}&endYear=${param.endYear}"><br>
+								    <button type="submit" class="btn-get-started pdf-download-button" data-tooltip="pdf를 다운받으시면, 자료에 대한 gemini의 summarize도 포함됩니다!">pdf다운로드</button>
+								  </form>
+							  
 							  </div>
 						  </section>
 						  
