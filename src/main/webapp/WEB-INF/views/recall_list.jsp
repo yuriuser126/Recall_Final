@@ -191,13 +191,16 @@
 			    </tr>
 			    <c:forEach var="item" items="${recall_list}">
 			        <tr>
-			            <td>${item.product_name}</td>
+			            <td>
+                    <a href="/recall_detail_${item.id}">${item.product_name}</a>
+                  </td>
 			            <td>${item.manufacturer}</td>
 			            <td>${item.manufacturing_period}</td>
 			            <td>${item.additional_info}</td>
 			            <td>${item.model_name}</td>
 			            <td>${item.recall_type}</td>
 			            <td>${item.contact_info}</td>
+                  </a>
 			        </tr>
 			    </c:forEach>
 			</table>

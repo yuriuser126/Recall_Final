@@ -216,7 +216,7 @@ public class RecallController {
 	}
 
 	// 상세 페이지
-	@GetMapping("/recall/details/{id}")
+	@GetMapping("/recall_detail_{id}")
 	public String getRecallDetail(@PathVariable("id") int id, Model model) {
 		Defect_DetailsDTO recall = recallService.getRecallById(id);
 		List<Integer> similarIds = recallService.getSimilarRecallIds(id);
@@ -233,7 +233,7 @@ public class RecallController {
 		try {
 			List<Defect_DetailsDTO> list = recallService.getAllRecalls(); // 전체 불러오기
 
-//			FileWriter writer = new FileWriter("C:/develop/recall-ai-recommend/recall.csv");
+//			FileWriter writer = new FileWriter("C:/develop/recall-ai-recommend/recall.csv");	//글자가 깨짐
 			OutputStreamWriter writer = new OutputStreamWriter(
 					new FileOutputStream("C:/develop/recall-ai-recommend/recall.csv"),
 					StandardCharsets.UTF_8
