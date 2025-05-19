@@ -9,12 +9,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -40,11 +43,12 @@ public class RecallController {
 //		return "recall_statics";
 //	}
 	
-	@RequestMapping("/recall_statics_year")
+	@RequestMapping(value = "/recall_statics_year", method = {RequestMethod.GET, RequestMethod.POST})
 	public String recall_statics_year( 
 			@RequestParam(required = false) Integer startYear,
 		    @RequestParam(required = false) Integer endYear,
-		    Model model) {
+		    Model model,
+		    HttpSession session) {
 		
 		log.info("@#recall_statics_year");
 		Map<String, Object> paramMap = new HashMap<>();
@@ -69,8 +73,10 @@ public class RecallController {
         	    .collect(Collectors.groupingBy(ManufacturerRecallDTO::getCar_manufacturer));
 
         	model.addAttribute("groupedRecallStats", grouped);
-		//결함신고
-        
+        	
+    	session.setAttribute("pdfStartYear", startYear); // 세션에 시작 연도 저장
+        session.setAttribute("pdfEndYear", endYear);     // 세션에 종료 연도 저장
+        log.info("@#Session saved - startYear: " + session.getAttribute("pdfStartYear") + ", endYear: " + session.getAttribute("pdfEndYear"));
 		return "recall_statics_year";
 	}
 	

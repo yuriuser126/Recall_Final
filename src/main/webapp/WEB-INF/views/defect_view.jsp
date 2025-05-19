@@ -245,7 +245,9 @@
        
           
           &nbsp;&nbsp;<input type="submit" value="목록보기" formaction="defectList">
-          
+		  &nbsp;&nbsp;
+
+
         </div>
       </form>
     </section><!-- /Starter Section Section -->
