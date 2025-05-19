@@ -33,6 +33,7 @@ dependencies {
 	implementation group: 'net.coobird', name: 'thumbnailator', version: '0.4.20'
 	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
  	implementation 'com.google.genai:google-genai:0.8.0' // gemini
+	implementation 'commons-codec:commons-codec:1.15'	// hashcode 사용을 위해 추가
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'

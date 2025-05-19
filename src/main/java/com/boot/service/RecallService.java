@@ -7,14 +7,20 @@ import com.boot.dto.Criteria;
 import com.boot.dto.DefectReportSummaryDTO;
 import com.boot.dto.Defect_DetailsDTO;
 import com.boot.dto.ManufacturerRecallDTO;
+import com.boot.dto.SyncDTO;
 
 public interface RecallService {
     List<Defect_DetailsDTO> getProductList(Criteria cri, String cntntsId) throws Exception;
     public List<DefectReportSummaryDTO> getDefectReportSummaryByYear(Map<String, Object> paramMap);
     int getTotalCount(Criteria cri, String cntntsId) throws Exception;
+    String fetchXmlFromApi(Criteria cri, String cntntsId) throws Exception;
     DefectReportSummaryDTO getDefectReportSummary(Map<String, Object> paramMap);
     List<ManufacturerRecallDTO> getYearlyRecallStats(int startYear, int endYear);
 //    int getdefect_reports_count(Integer startYear, Integer endYear);
     List<DefectReportSummaryDTO> getDefectReportSummaryByMonth(Map<String, Object> paramMap);
     List<ManufacturerRecallDTO> getYearlyRecallStatsByMonth(Map<String, Object> paramMap);
+    
+    void saveApiDataToDB(List<Defect_DetailsDTO> apiList); // DB 저장
+    SyncDTO syncApiDataWithDB(List<Defect_DetailsDTO> apiList);
+
 }

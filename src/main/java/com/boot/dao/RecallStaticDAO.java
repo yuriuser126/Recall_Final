@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.boot.dto.DefectReportSummaryDTO;
+import com.boot.dto.Defect_DetailsDTO;
 import com.boot.dto.ManufacturerRecallDTO;
 
 @Mapper
@@ -16,6 +17,14 @@ public interface RecallStaticDAO {
 	List<ManufacturerRecallDTO> getYearlyRecallStats(@Param("startYear") int startYear, @Param("endYear") int endYear);
 	List<DefectReportSummaryDTO> getDefectReportSummaryByMonth(Map<String, Object> paramMap);
 	List<ManufacturerRecallDTO> getYearlyRecallStatsByMonth(Map<String, Object> paramMap);
+	
+	int checkDuplicate(Defect_DetailsDTO dto);
+	void insertDefect(Defect_DetailsDTO dto);
+	
+	
+	Defect_DetailsDTO findByKey(Defect_DetailsDTO dto);
+	void updateDefect(Defect_DetailsDTO dto);
+
 }
 
 
