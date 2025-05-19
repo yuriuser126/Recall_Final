@@ -190,6 +190,7 @@
 		AND manufacturer = #{manufacturer}
 	</update>
 	
+	<!-- API 갱신시 비교를 위한 select문 -->
 	<select id="findByKey" resultType="com.boot.dto.Defect_DetailsDTO" parameterType="com.boot.dto.Defect_DetailsDTO">
 		SELECT *
 		FROM defect_details

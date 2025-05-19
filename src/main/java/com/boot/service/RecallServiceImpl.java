@@ -103,7 +103,8 @@ public class RecallServiceImpl implements RecallService{
 	            defectDetails.setModel_name(getTagValue("modlNmInfo", element));
 	            defectDetails.setRecall_type(getTagValue("recallSe", element));
 	            defectDetails.setContact_info(getTagValue("recallEntrpsInfo", element));
-	            defectDetails.setAdditional_info(getTagValue("etcInfo", element));
+//	            defectDetails.setAdditional_info(getTagValue("etcInfo", element));
+	            defectDetails.setAdditional_info(stripHtmlTags(getTagValue("etcInfo", element)));
 
 	            defectList.add(defectDetails);
 	        }
@@ -111,6 +112,12 @@ public class RecallServiceImpl implements RecallService{
 	        return defectList;
 	    }
 
+	    // 모든 <태그> 제거
+	    private static String stripHtmlTags(String input) {
+	    	if (input == null) return "";
+	    	return input.replaceAll("<[^>]*>", "").trim();
+	    }
+	    
 	    // 특정 태그의 값을 추출하는 helper method
 	    private static String getTagValue(String tag, Element element) {
 	        NodeList list = element.getElementsByTagName(tag);
