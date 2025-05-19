@@ -16,8 +16,8 @@
     SELECT id, product_name, manufacturer, manufacturing_period, model_name, recall_type, contact_info, additional_info
     FROM defect_details
     ORDER BY id
-    LIMIT #{limit} OFFSET #{offset}
-	</select>
+    LIMIT #{offset}, #{limit}
+</select>
     
     
     

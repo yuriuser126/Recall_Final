@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -194,6 +197,7 @@ public class RecallServiceImpl implements RecallService{
 		}
 	}
 	
+	// API -> DB 동기화
 	@Override
 	public SyncDTO syncApiDataWithDB(List<Defect_DetailsDTO> apiList) {
 		RecallStaticDAO dao = sqlSession.getMapper(RecallStaticDAO.class);
@@ -220,6 +224,31 @@ public class RecallServiceImpl implements RecallService{
 		result.setUpdated(updated);
 		result.setSkipped(skipped);
 		return result;
+	}
+
+	
+	@Override
+	public List<Integer> getSimilarRecallIds(int targetId) {
+		String apiUrl = "http://localhost:5000/recommend?id=" + targetId;
+
+		RestTemplate restTemplate = new RestTemplate();
+
+		ResponseEntity<Integer[]> response = restTemplate.getForEntity(apiUrl, Integer[].class);
+		Integer[] ids = response.getBody();
+
+		return Arrays.asList(ids);
+	}
+	
+	@Override
+	public List<Defect_DetailsDTO> getAllRecalls() {
+		RecallStaticDAO dao = sqlSession.getMapper(RecallStaticDAO.class);
+		return dao.getAllRecalls();
+	}
+	
+	@Override
+	public Defect_DetailsDTO getRecallById(int id) {
+		RecallStaticDAO dao = sqlSession.getMapper(RecallStaticDAO.class);
+		return dao.findById(id);
 	}
 
 }

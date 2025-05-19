@@ -1,0 +1,15 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boot.dao.RecallCountDAO">
+    
+
+    <select id="getAllModelNames" resultType="string">
+		select model_name from defect_details
+    </select>
+    
+    
+
+    
+</mapper>

@@ -199,4 +199,13 @@
 		AND manufacturer = #{manufacturer}
 	</select>
 
+	<select id="getAllRecalls" resultType="com.boot.dto.Defect_DetailsDTO">
+		SELECT * FROM defect_details
+	</select>
+
+	<select id="findById" resultType="com.boot.dto.Defect_DetailsDTO">
+		SELECT * FROM defect_details
+		WHERE id = #{id}
+	</select>
+	
 </mapper>
