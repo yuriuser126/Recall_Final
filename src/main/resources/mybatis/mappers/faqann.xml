@@ -93,9 +93,12 @@
 	</select>
 	
     <select id="announce_view" resultType="com.boot.dto.AnnounceDTO">
-        select id, title, content, created_at
-          from announce 
-         where id=#{id}
+        SELECT
+            a.id,
+            a.title,
+            a.content,
+            a.created_at AS created_at, (SELECT MAX(id) FROM announce WHERE id &lt; a.id) AS prevId, (SELECT MIN(id) FROM announce WHERE id &gt; a.id) AS nextId  FROM announce a
+        WHERE a.id = #{id}
     </select>
 
 <!--    <update id="modify">-->

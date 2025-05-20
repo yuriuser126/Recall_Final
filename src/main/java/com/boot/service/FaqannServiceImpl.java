@@ -66,7 +66,7 @@ public class FaqannServiceImpl implements FaqannService{
 	}
 
 	@Override
-	public AnnounceDTO announce_view(HashMap<String, String> param) {
+	public AnnounceDTO announce_view(Long param) {
 		FaqannDAO dao=sqlSession.getMapper(FaqannDAO.class);
 		AnnounceDTO dto = dao.announce_view(param);
 		return dto;

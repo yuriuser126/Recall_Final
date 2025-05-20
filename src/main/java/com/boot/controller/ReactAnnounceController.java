@@ -63,7 +63,7 @@ public class ReactAnnounceController {
 
     // 예시: 상세 페이지 API (React에서 /announce_view/:id 로 라우팅될 경우)
     @GetMapping("/{id}") // PathVariable을 사용하여 ID를 받습니다.
-    public ResponseEntity<AnnounceDTO> getAnnounceDetail(@PathVariable("id") HashMap<String, String> id) {
+    public ResponseEntity<AnnounceDTO> getAnnounceDetail(@PathVariable("id") Long id) {
         log.info("@# getAnnounceDetail() 호출: ID = {}", id);
         
         try {
