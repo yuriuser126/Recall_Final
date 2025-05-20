@@ -17,7 +17,6 @@ import java.util.Map;
 
 @RestController // RESTful API 컨트롤러임을 명시
 @RequestMapping("/api/announce") // React의 프록시 설정과 매칭될 API 경로 지정
-@CrossOrigin(origins = "http://localhost:3000") // React 개발 서버의 CORS 허용
 @Log4j2 // Lombok을 이용한 로그 설정
 public class ReactAnnounceController {
 
