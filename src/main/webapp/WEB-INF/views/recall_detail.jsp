@@ -105,7 +105,7 @@
 
 				<nav id="navmenu" class="navmenu">
 					<ul>
-						<li><a href="recall_list">리콜 상세 정보</a></li>
+						<li><a href="recall_list">리콜정보</a></li>
 						<li class="dropdown"><a href="#"><span>결함신고</span> <i
 									class="bi bi-chevron-down toggle-dropdown"></i></a>
 							<ul>
@@ -161,6 +161,7 @@
 				<div class="container">
 					<ol>
 						<li><a href="main">차량리콜도우미</a></li>
+						<li><a href="recall_list">리콜정보</a></li>
 						<li class="current">리콜 상세 정보</li>
 					</ol>
 				</div>

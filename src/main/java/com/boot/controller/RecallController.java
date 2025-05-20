@@ -1,7 +1,6 @@
 package com.boot.controller;
 
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -132,6 +131,7 @@ public class RecallController {
 	}
 */
 	
+	// DB에서 값을 받아오도록 수정
 	@RequestMapping("/recall_list")
 	public String recall_list(Criteria cri, Model model) throws Exception {
 		List<Defect_DetailsDTO> list = recallService.getAllRecallByCri(cri);
