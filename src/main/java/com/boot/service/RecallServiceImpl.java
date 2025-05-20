@@ -1,10 +1,14 @@
 package com.boot.service;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -246,7 +250,7 @@ public class RecallServiceImpl implements RecallService{
 	}
 	
 	@Override
-	public Defect_DetailsDTO getRecallById(int id) {
+	public Defect_DetailsDTO getRecallById(Long id) {
 		RecallStaticDAO dao = sqlSession.getMapper(RecallStaticDAO.class);
 		return dao.findById(id);
 	}
@@ -261,6 +265,51 @@ public class RecallServiceImpl implements RecallService{
 	public int getRecallTotalCount(Criteria cri) {
 		RecallStaticDAO dao = sqlSession.getMapper(RecallStaticDAO.class);
 		return dao.getTotalCount(cri);
-	}	
+	}
+	@Override
+	public byte[] generateCsvReport() throws IOException {
+        // 이 getAllRecalls() 메소드는 실제 매퍼나 리포지토리에서 모든 데이터를 가져오는 메소드여야 합니다.
+        // 예: recallMapper.getAllRecalls();
+		RecallStaticDAO dao = sqlSession.getMapper(RecallStaticDAO.class);
+        List<Defect_DetailsDTO> list = getAllRecalls(); // 전체 데이터 불러오기
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        // UTF-8 BOM을 추가하여 MS Excel에서 한글 깨짐 현상을 방지
+        baos.write(new byte[] { (byte) 0xEF, (byte) 0xBB, (byte) 0xBF });
+        OutputStreamWriter writer = new OutputStreamWriter(baos, StandardCharsets.UTF_8);
+
+        // CSV 헤더 작성
+        writer.write("id,manufacturer,model_name,recall_type,additional_info\n");
+
+        // 데이터 작성
+        for (Defect_DetailsDTO dto : list) {
+            writer.write(dto.getId() + "," +
+                         clean(dto.getManufacturer()) + "," +
+                         clean(dto.getModel_name()) + "," +
+                         clean(dto.getRecall_type()) + "," +
+                         clean(dto.getAdditional_info()) + "\n");
+        }
+
+        writer.flush(); // 버퍼 비우기
+        writer.close(); // writer 닫기 (baos는 자동으로 닫히지 않음)
+
+        return baos.toByteArray(); // 바이트 배열 반환
+    }
+
+    /**
+     * CSV에 쓸 때 콤마나 개행 문자를 제거하고 따옴표로 감싸는 유틸리티 메소드.
+     * 이는 CSV 파싱 오류를 방지하기 위함입니다.
+     */
+    private String clean(String text) {
+        if (text == null) return "";
+        // 콤마(,), 큰따옴표("), 개행 문자(\r, \n) 등을 처리
+        String cleanedText = text.replaceAll("\"", "\"\""); // 큰따옴표는 두 개로 이스케이프
+        // 필드 내에 콤마나 개행이 포함되어 있다면 큰따옴표로 감쌈
+        if (cleanedText.contains(",") || cleanedText.contains("\n") || cleanedText.contains("\r") || cleanedText.contains("\"")) {
+            return "\"" + cleanedText + "\"";
+        }
+        return cleanedText.trim();
+    }
+
 	
 }
