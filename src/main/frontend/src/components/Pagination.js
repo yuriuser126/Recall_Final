@@ -17,7 +17,7 @@ function Pagination({ pageMaker, onPageChange }) {
               {prev && (
                 <li className="paginate_button">
                   <a href="#" onClick={(e) => { e.preventDefault(); handlePageClick(startPage - 1); }}>
-                    <i className="bi bi-chevron-left"></i>
+                    <i className="bi bi-chevron-left">이전</i>
                   </a>
                 </li>
               )}
@@ -33,7 +33,7 @@ function Pagination({ pageMaker, onPageChange }) {
               {next && (
                 <li className="paginate_button">
                   <a href="#" onClick={(e) => { e.preventDefault(); handlePageClick(endPage + 1); }}>
-                    <i className="bi bi-chevron-right"></i>
+                    <i className="bi bi-chevron-right">다음</i>
                   </a>
                 </li>
               )}
