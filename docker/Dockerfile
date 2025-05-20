@@ -1,9 +1,11 @@
-FROM openjdk:17
+# Dockerfile
+
+FROM openjdk:17-jdk-slim
+
 WORKDIR /app
-COPY . .
 
-RUN apt-get update && apt-get install -y findutils
+# 빌드된 JAR 파일을 이미지로 복사 (경로가 맞는지 꼭 확인!)
+COPY build/libs/boot_bigdata_project-0.0.1-SNAPSHOT.jar app.jar
 
-RUN chmod +x ./gradlew
-RUN ./gradlew build --stacktrace
-CMD ["java", "-jar", "build/libs/boot_bigdata_project-0.0.1-SNAPSHOT.jar"]
+# 컨테이너 시작 시 실행 명령
+CMD ["java", "-jar", "app.jar"]
