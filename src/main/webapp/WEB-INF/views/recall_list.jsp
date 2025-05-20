@@ -208,9 +208,10 @@
 			    </tr>
 			    <c:forEach var="item" items="${recall_list}">
 			        <tr>
-			            <td>
-                    <a href="/recall_detail_${item.id}">${item.product_name}</a>
-                  </td>
+<!--			            <td>-->
+<!--                    <a href="/recall_detail_${item.id}">${item.product_name}</a>-->
+<!--                  </td>-->
+			            <td>${item.product_name}</td>
 			            <td>${item.manufacturer}</td>
 			            <td>${item.manufacturing_period}</td>
 			            <td>${item.additional_info}</td>
@@ -223,13 +224,7 @@
 			</table>
 		</div>
 		
-<!--		<form method="get" action="/recall/download"  >-->
-<!--		    <button type="submit">CSV 다운로드</button>-->
-<!--		</form>-->
-		
-<!--		<a href="/recall/download" download="recall_list.csv">-->
-<!--		    <button type="button">CSV 다운로드</button>-->
-<!--		</a>-->
+
 
 
 <button id="downloadCsvBtn">CSV 전체 다운로드</button>
