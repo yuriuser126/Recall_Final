@@ -10,7 +10,7 @@ import { fetchTestData } from './services/api';
 import './styles/App.css';
 
 function App() {
-  const [backendData, setBackendData] = useState(null);
+const [backendData, setBackendData] = useState(null);
 
   useEffect(() => {
     const loadTestData = async () => {
@@ -20,6 +20,7 @@ function App() {
 
     loadTestData();
   }, []);
+
 
   return (
     <Router>
@@ -36,6 +37,8 @@ function App() {
           </ul>
         </nav>
 
+
+
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/profile" element={<UserProfilePage />} />
@@ -43,6 +46,7 @@ function App() {
           {/* <Route path="/announce_view/:id" element={<AnnounceViewPage />} /> 공지사항 상세 페이지 라우트 (가정) */}
           {/* 기타 라우트들 */}
         </Routes>
+
 
         {backendData && (
           <div style={{ marginTop: '20px', borderTop: '1px solid #ccc', paddingTop: '10px' }}>
