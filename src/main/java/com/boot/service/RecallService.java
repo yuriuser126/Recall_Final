@@ -24,7 +24,9 @@ public interface RecallService {
     SyncDTO syncApiDataWithDB(List<Defect_DetailsDTO> apiList); // DB 동기화
 
     List<Defect_DetailsDTO> getAllRecalls(); // DB의 recall 모두 select
-    Defect_DetailsDTO getRecallById(int id); // DB의 recall 을 id 기반 select
-    List<Integer> getSimilarRecallIds(int targetId);
+    Defect_DetailsDTO getRecallById(int id); // DB의 recall 하나를 id 기반 select
+    List<Integer> getSimilarRecallIds(int targetId); // 유사 리콜 id 추천
+	List<Defect_DetailsDTO> getAllRecallByCri(Criteria cri); // DB의 recall 모두 cri 기반 select
+	int getRecallTotalCount(Criteria cri);    
 
 }

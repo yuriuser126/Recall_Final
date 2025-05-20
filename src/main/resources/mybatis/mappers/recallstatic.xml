@@ -155,9 +155,7 @@
 	</select>
 
 
-<!--	아래는 API -> DB 저장 및 동기화 쿼리	-->
-
-	<!-- 중복 체크 -->
+	<!-- API 저장시 중복 체크 -->
 	<select id="checkDuplicate" resultType="int" parameterType="com.boot.dto.Defect_DetailsDTO">
 		SELECT COUNT(*) 
 		FROM defect_details
@@ -207,5 +205,16 @@
 		SELECT * FROM defect_details
 		WHERE id = #{id}
 	</select>
+	
+	<select id="getListWithPaging" resultType="com.boot.dto.Defect_DetailsDTO">
+		SELECT * FROM defect_details
+		ORDER BY id
+		LIMIT #{amount} OFFSET #{offset}
+	</select>
+	
+	<select id="getTotalCount" resultType="int">
+		SELECT COUNT(*) FROM defect_details
+	</select>
+
 	
 </mapper>

@@ -17,7 +17,6 @@ import java.util.Map;
 
 @RestController // RESTful API 컨트롤러임을 명시
 @RequestMapping("/api/announce") // React의 프록시 설정과 매칭될 API 경로 지정
-@CrossOrigin(origins = "http://localhost:3000") // React 개발 서버의 CORS 허용
 @Log4j2 // Lombok을 이용한 로그 설정
 public class ReactAnnounceController {
 
@@ -78,6 +77,20 @@ public class ReactAnnounceController {
         } catch (Exception e) {
             log.error("@# 공지사항 상세 조회 중 오류 발생: {}", e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @PostMapping("/write") // HTTP POST 요청 처리, 경로를 /api/announce/write 로 설정
+    public ResponseEntity<String> writeAnnounce(@RequestBody AnnounceDTO announceDTO) { // @RequestBody로 JSON 바디를 DTO에 매핑
+        log.info("@# writeAnnounce() 호출. 작성할 공지사항: {}", announceDTO);
+
+        try {
+            service.announce_write_ok(announceDTO); // 서비스 계층을 통해 DB에 저장 (서비스 메소드명은 실제와 일치시켜야 함)
+            log.info("@# 공지사항 작성 완료!");
+            return new ResponseEntity<>("공지사항 작성이 성공적으로 완료되었습니다.", HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("@# 공지사항 작성 중 오류 발생: {}", e.getMessage());
+            return new ResponseEntity<>("공지사항 작성에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

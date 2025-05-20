@@ -198,6 +198,7 @@
 			</form>
 			<table class="table-custom">
 			    <tr>
+			        <th>리콜 ID</th>
 			        <th>제품명</th>
 			        <th>제조사</th>
 			        <th>제조기간</th>
@@ -208,9 +209,9 @@
 			    </tr>
 			    <c:forEach var="item" items="${recall_list}">
 			        <tr>
-<!--			            <td>-->
-<!--                    <a href="/recall_detail_${item.id}">${item.product_name}</a>-->
-<!--                  </td>-->
+			            <td>
+							<a href="/recall_detail_${item.id}">${item.id}</a>
+						</td>
 			            <td>${item.product_name}</td>
 			            <td>${item.manufacturer}</td>
 			            <td>${item.manufacturing_period}</td>

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.boot.dto.Criteria;
 import com.boot.dto.DefectReportSummaryDTO;
 import com.boot.dto.Defect_DetailsDTO;
 import com.boot.dto.ManufacturerRecallDTO;
@@ -26,6 +27,9 @@ public interface RecallStaticDAO {
 	void updateDefect(Defect_DetailsDTO dto);
 	List<Defect_DetailsDTO> getAllRecalls();
 	Defect_DetailsDTO findById(int id);
+
+	List<Defect_DetailsDTO> getListWithPaging(Criteria cri);
+	int getTotalCount(Criteria cri);
 }
 
 
