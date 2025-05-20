@@ -11,8 +11,8 @@ public interface DefectListDAO {
 //	public void write(DefectListDTO defectListDTO);
 	public DefectListDTO defectView(Long id);
 	public DefectListDTO defect_modify(HashMap<String, String> param);
-	public void modify(HashMap<String, String> param);
-	public void delete(HashMap<String, String> param);
+	public void modify(DefectListDTO DefectListDTO);
+	public void delete(Long id);
 	public DefectListDTO getById(int id);
 
 }

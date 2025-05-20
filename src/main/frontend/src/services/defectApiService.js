@@ -48,4 +48,40 @@ export const submitNewDefectReport = async (reportData) => {
         throw error;
     }
 };
+// 비밀번호 확인 API (이전 답변에서 추가했던 함수)
+export const checkPassword = async (id, password) => {
+    try {
+        // 서버의 엔드포인트와 요청 바디 형식을 확인해야 합니다.
+        // Spring Boot 컨트롤러에서 @RequestBody Map<String, String> request 로 받으므로
+        // { id, password } 객체를 보내는 것이 일반적입니다.
+        const response = await axios.post(`${API_BASE_URL}/defect_pwcheck`, { id: id, password: password });
+        return response.data; // 서버에서 true/false 값을 반환한다고 가정
+    } catch (error) {
+        console.error(`비밀번호 확인 실패:`, error);
+        throw error; // 오류를 상위 컴포넌트로 던져서 처리하도록 함
+    }
+};
 
+// 결함 보고서 수정 API
+export const updateDefectReport = async (defectData) => {
+    try {
+        // PUT 요청으로 보냅니다. Spring Boot의 @PutMapping과 매핑됩니다.
+        const response = await axios.put(`${API_BASE_URL}/defect_modify`, defectData);
+        return response.data; // 서버에서 성공/실패 메시지 또는 상태를 반환할 수 있습니다.
+    } catch (error) {
+        console.error(`결함 보고서 수정 실패 (ID: ${defectData.id}):`, error);
+        throw error;
+    }
+};
+
+// 결함 보고서 삭제 API
+export const deleteDefectReport = async (id) => {
+    try {
+        // DELETE 요청으로 보냅니다. Spring Boot의 @DeleteMapping과 매핑됩니다.
+        const response = await axios.delete(`${API_BASE_URL}/defect_delete/${id}`);
+        return response.data; // 서버에서 성공/실패 메시지 또는 상태를 반환할 수 있습니다.
+    } catch (error) {
+        console.error(`결함 보고서 삭제 실패 (ID: ${id}):`, error);
+        throw error;
+    }
+};

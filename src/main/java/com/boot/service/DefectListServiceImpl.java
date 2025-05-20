@@ -47,18 +47,17 @@ public class DefectListServiceImpl implements DefectListService{
 	}
 
 	@Override
-	public void modify(HashMap<String, String> param) {
+	public void modify(DefectListDTO DefectListDTO) {
 		DefectListDAO dao=sqlSession.getMapper(DefectListDAO.class);
-		dao.modify(param);
+		dao.modify(DefectListDTO);
 	}
 
 	@Override
-	public void delete(HashMap<String, String> param) {
-		log.info("@# DefectListServiceImpl delete param=>"+param);
+	public void delete(Long id) {
 		DefectListDAO dao=sqlSession.getMapper(DefectListDAO.class);
 		
 		
-		dao.delete(param);
+		dao.delete(id);
 		
 		
 	}
