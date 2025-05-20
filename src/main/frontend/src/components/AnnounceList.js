@@ -1,6 +1,7 @@
 // components/AnnounceList.js
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; // 페이지 이동을 위한 useNavigate
+import { formatDateTime } from '../utils/formatters';
 
 function AnnounceList({ announcements, total }) {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ function AnnounceList({ announcements, total }) {
           <tr key={item.id} onClick={() => handleRowClick(item.id)}>
             <td>{item.id}</td>
             <td>{item.title}</td>
-            <td>{item.createdAt}</td> {/* JSP의 created_at과 동일하게 맞춰야 함 */}
+            <td>{formatDateTime(item.created_at)}</td>
           </tr>
         ))}
       </tbody>

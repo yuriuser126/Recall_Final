@@ -1,10 +1,11 @@
 // pages/AnnouncePage.js
 import React, { useEffect, useState, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom'; // URL 쿼리 파라미터 읽기
+import { useSearchParams, Link } from 'react-router-dom'; // URL 쿼리 파라미터 읽기
 import AnnounceList from '../components/AnnounceList';
 import AnnounceSearch from '../components/AnnounceSearch';
 import Pagination from '../components/Pagination';
 import { fetchAnnouncements } from '../services/announceService';
+
 
 function AnnouncePage() {
   const [announcements, setAnnouncements] = useState([]);
@@ -96,9 +97,8 @@ const handleSearch = useCallback((searchParams) => {
       <h2>공지사항</h2>
       <AnnounceList announcements={announcements} total={pageMaker.total} />
       
-      {/* 글쓰기 버튼 (예시) */}
-      <div style={{ textAlign: 'right', margin: '10px 0' }}>
-        <button onClick={() => alert('글쓰기 페이지로 이동')}>글쓰기</button>
+      <div style={{ textAlign: 'right', marginTop: '20px' }}>
+          <Link to="/announce_write" style={{ padding: '10px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '5px', textDecoration: 'none' }}>글쓰기</Link>
       </div>
 
       <AnnounceSearch
