@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<html>
+<!DOCTYPE html>
 
 <head>
   <meta charset="utf-8">
@@ -37,6 +37,23 @@
   * License: https://bootstrapmade.com/license/
   ======================================================== -->
   <style>
+	
+	button {
+	  background-color: #007B5E; /* 청록 계열의 진한 초록 */
+	  color: #ffffff;            /* 흰 글씨 */
+	  border: none;
+	  padding: 10px 20px;
+	  margin: 5px;
+	  border-radius: 8px;
+	  font-size: 16px;
+	  cursor: pointer;
+	  transition: background-color 0.3s ease;
+	}
+
+	button:hover {
+	  background-color: #00604a; /* hover 시 더 어두운 색 */
+	}
+	
   .table-custom {
     width: 100%;
     border-collapse: collapse;
@@ -191,6 +208,9 @@
 			    </tr>
 			    <c:forEach var="item" items="${recall_list}">
 			        <tr>
+<!--			            <td>-->
+<!--                    <a href="/recall_detail_${item.id}">${item.product_name}</a>-->
+<!--                  </td>-->
 			            <td>${item.product_name}</td>
 			            <td>${item.manufacturer}</td>
 			            <td>${item.manufacturing_period}</td>
@@ -198,29 +218,18 @@
 			            <td>${item.model_name}</td>
 			            <td>${item.recall_type}</td>
 			            <td>${item.contact_info}</td>
+                  </a>
 			        </tr>
 			    </c:forEach>
 			</table>
 		</div>
 		
-<!--		<form method="get" action="/recall/download"  >-->
-<!--		    <button type="submit">CSV 다운로드</button>-->
-<!--		</form>-->
-		
-<!--		<a href="/recall/download" download="recall_list.csv">-->
-<!--		    <button type="button">CSV 다운로드</button>-->
-<!--		</a>-->
-
-<!--<button onclick="location.href='/recall/download'">CSV 다운로드</button>-->
-
-<!--<input type="hidden" id="pageNum" value="${cri.pageNum}">-->
-<!--<input type="hidden" id="amount" value="${cri.amount}">-->
 
 
-<!--<a href="#" onclick="downloadCSV(); return false;">CSV 다운로드</a>-->
-<!--<button type="button" onclick="downloadCSV()">CSV 다운로드</button>-->
 
-<button type="button" id="downloadBtn">CSV 다운로드</button>
+<button id="downloadCsvBtn">CSV 전체 다운로드</button>
+<button id="excelDownloadBtn">엑셀 전체 다운로드</button>
+
 
 
 		
@@ -234,24 +243,26 @@
 		  <div class="container">
 		    <div class="d-flex justify-content-center">
 			    <div class="div_page">
-			      <ul>
-					<c:if test="${pageMaker.prev}">
-			        	<li class="paginate_button"><a href="${pageMaker.startPage -1}"><i class="bi bi-chevron-left"></i></a></li>
-					</c:if>
+					 <ul>
+						<c:if test="${pageMaker.prev}">
+				        	<li class="paginate_button"><a href="${pageMaker.startPage -1}"><i class="bi bi-chevron-left"></i></a></li>
+						</c:if>
+						
+						<c:forEach var="num" begin="${pageMaker.startPage}" end="${pageMaker.endPage}">
+							<li class="paginate_button">
+						        <a href="${num}" 
+						           class="${pageMaker.cri.pageNum eq num ? 'active' : ''}">
+						           ${num}
+						        </a>
+						    </li>
+	<!--			        <li><a href="#" class="active">2</a></li>-->
+						</c:forEach>		
+						<c:if test="${pageMaker.next}">
+				        	<li class="paginate_button"><a href="${pageMaker.endPage +1}"><i class="bi bi-chevron-right"></i></a></li>
+						</c:if>
+				      </ul>
+	
 					
-					<c:forEach var="num" begin="${pageMaker.startPage}" end="${pageMaker.endPage}">
-						<li class="paginate_button">
-					        <a href="${num}" 
-					           class="${pageMaker.cri.pageNum eq num ? 'active' : ''}">
-					           ${num}
-					        </a>
-					    </li>
-<!--			        <li><a href="#" class="active">2</a></li>-->
-					</c:forEach>		
-					<c:if test="${pageMaker.next}">
-			        	<li class="paginate_button"><a href="${pageMaker.endPage +1}"><i class="bi bi-chevron-right"></i></a></li>
-					</c:if>
-			      </ul>
 			  </div>
 		    </div>
 		  </div>
@@ -353,32 +364,46 @@
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
   
+
   <script>
-  document.getElementById('downloadBtn').addEventListener('click', function() {
-    const form = document.getElementById('actionForm');
-    const pageNum = form.querySelector('input[name="pageNum"]').value;
-    const amount = form.querySelector('input[name="amount"]').value;
-    const contextPath = '${pageContext.request.contextPath}';
-    const url = `${contextPath}/recall/download?pageNum=${pageNum}&amount=${amount}`;
-	
-	console.log("✅ 다운로드 요청 URL:", url);
-    window.location.href = url;
+	//csv 다운로드
+  document.getElementById('downloadCsvBtn').addEventListener('click', function() {
+      window.location.href = '/recall/download';
+  });
+  
+  //xlsx 다운로드
+  document.getElementById("excelDownloadBtn").addEventListener("click", function() {
+      window.location.href = "/recall/downloadExcel";
   });
   </script>
   
 <!--  <script>-->
-<!--    document.getElementById('downloadBtn').addEventListener('click', function() {-->
-<!--      console.log("downloadCSV 함수 실행됨");-->
-<!--      alert("downloadCSV 함수 실행됨");-->
+<!--	function getParameterByName(name) {-->
+<!--	    const url = window.location.href;-->
+<!--	    name = name.replace(/[\[\]]/g, '\\$&');-->
+<!--	    const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');-->
+<!--	    const results = regex.exec(url);-->
+<!--	    if (!results) return null;-->
+<!--	    if (!results[2]) return '';-->
+<!--	    return decodeURIComponent(results[2].replace(/\+/g, ' '));-->
+<!--	}-->
 
-<!--      const urlParams = new URLSearchParams(window.location.search);-->
-<!--      const pageNum = urlParams.get("pageNum") || 1;-->
-<!--      const amount = urlParams.get("amount") || 10;-->
+<!--	window.addEventListener('DOMContentLoaded', () => {-->
+<!--	    const pageNum = getParameterByName('pageNum') || '1';-->
+<!--	    const amount = getParameterByName('amount') || '10';-->
+<!--	    const form = document.getElementById('actionForm');-->
 
-<!--      const url = `/recall/download?pageNum=${pageNum}&amount=${amount}`;-->
-<!--      window.location.href = url;-->
-<!--    });-->
+<!--	    if (form) {-->
+<!--	        const pageNumInput = form.querySelector('input[name="pageNum"]');-->
+<!--	        if (pageNumInput) pageNumInput.value = pageNum;-->
+
+<!--	        const amountInput = form.querySelector('input[name="amount"]');-->
+<!--	        if (amountInput) amountInput.value = amount;-->
+<!--	    }-->
+<!--	});-->
 <!--  </script>-->
+  
+  
   
 
 <!--

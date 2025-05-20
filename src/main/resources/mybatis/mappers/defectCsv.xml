@@ -18,6 +18,12 @@
     ORDER BY id
     LIMIT #{offset}, #{limit}
 </select>
+
+<select id="getAllDefects" resultType="com.boot.dto.Defect_DetailsDTO">
+    SELECT id, product_name, manufacturer, manufacturing_period, model_name, recall_type, contact_info, additional_info
+    FROM defect_details
+    ORDER BY id
+</select>
     
     
     
