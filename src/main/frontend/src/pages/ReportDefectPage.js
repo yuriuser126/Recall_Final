@@ -1,45 +1,29 @@
 // src/pages/ReportDefectPage.js
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-
-// 전화번호 포맷팅 유틸리티 함수 (formatters.js에 추가해도 좋습니다)
-const formatPhoneNumber = (value) => {
-  if (!value) return '';
-  const cleaned = value.replace(/\D/g, ''); // 숫자만 남김
-  const len = cleaned.length;
-
-  if (len < 4) {
-    return cleaned;
-  } else if (len < 7) {
-    return cleaned.slice(0, 3) + '-' + cleaned.slice(3);
-  } else if (len < 11) {
-    return cleaned.slice(0, 3) + '-' + cleaned.slice(3, 7) + '-' + cleaned.slice(7);
-  } else {
-    // 010123456789 (12자리)와 같은 경우
-    return cleaned.slice(0, len - 8) + '-' + cleaned.slice(len - 8, len - 4) + '-' + cleaned.slice(len - 4);
-  }
-};
+import { useForm } from '../hooks/useForm';
+import { formatPhoneNumber, formatTelephoneNumber, validatePassword } from '../utils/formInputFormatters';
 
 function ReportDefectPage() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    // 신고인 정보
+
+  const { formData, setFormData, handleChange } = useForm({
     reporter_name: '',
-    sex: 'F', // 기본값
-    ipAddress: '1.220.191.166', // 예시 IP, 실제로는 서버에서 가져오거나 백엔드에서 자동 추가
+    sex: 'F',
+    ipAddress: '1.220.191.166',
     birth_date: '',
-    mobile_number_display: '', // 화면 표시용
-    mobile_number: '',       // 실제 전송용 (하이픈 없는 숫자)
-    phone_number_display: '',  // 화면 표시용
-    phone_number: '',        // 실제 전송용 (하이픈 없는 숫자)
-    address: '', // 기본 주소
-    emailAddress: '', // hidden 필드
-    mailYn: 'N', // hidden 필드
-    visibility: 'true', // 공개여부, 기본값 공개
+    mobile_number_display: '',
+    mobile_number: '',
+    phone_number_display: '',
+    phone_number: '',
+    address: '',
+    emailAddress: '',
+    mailYn: 'N',
+    visibility: 'true',
     password: '',
-    // 자동차 정보
-    report_type: 'A', // 기본값 자동차
+    report_type: 'A',
     car_registration_number: '',
     car_model: '',
     car_manufacturer: '',
@@ -50,136 +34,72 @@ function ReportDefectPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitError, setSubmitError] = useState(null);
-  const [submitSuccess, setSubmitSuccess] = useState(null);
+  const [submitSuccess, setSubmitSuccess] = useState(null); // 이 변수도 사용되도록 아래 JSX에 추가됨
 
-  // 현재 시간 자동 설정 (이전 FormEditor와 동일)
-  const [currentTime, setCurrentTime] = useState(new Date().toLocaleString());
-  useEffect(() => {
-    // 실제 작성 시점의 시간은 백엔드에서 생성하는 것이 좋습니다.
-    // 여기서는 단순히 display용
-  }, []);
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-
-    if (type === 'radio') {
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-    } else {
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-    }
-  };
-
-  // 휴대폰 번호 입력 및 포맷팅
   const handleMobileNumberChange = (e) => {
     const displayValue = formatPhoneNumber(e.target.value);
-    const rawValue = displayValue.replace(/-/g, ''); // 하이픈 제거된 숫자만 저장
     setFormData((prevData) => ({
       ...prevData,
       mobile_number_display: displayValue,
-      mobile_number: rawValue,
+      mobile_number: displayValue.replace(/-/g, ''),
     }));
   };
 
-  // 전화 번호 입력 및 포맷팅
   const handleTelephoneChange = (e) => {
-    const displayValue = formatPhoneNumber(e.target.value);
-    const rawValue = displayValue.replace(/-/g, ''); // 하이픈 제거된 숫자만 저장
+    const displayValue = formatTelephoneNumber(e.target.value);
     setFormData((prevData) => ({
       ...prevData,
       phone_number_display: displayValue,
-      phone_number: rawValue,
+      phone_number: displayValue.replace(/-/g, ''),
     }));
   };
 
-  // 비밀번호 유효성 검사 (간단한 예시)
-  const validatePassword = (password) => {
-    const regex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%*()=_+.|])[a-zA-Z\d~!@#$%*()=_+.|]{9,15}$/;
-    if (!password) {
-      setPasswordError('비밀번호를 입력해주세요.');
-      return false;
-    }
-    if (!regex.test(password)) {
-      setPasswordError('비밀번호는 9~15자의 영문/숫자/특수문자(~, !, @, #, $, *, (, ), =, +, _, ., |) 혼용만 가능합니다.');
-      return false;
-    }
-    setPasswordError('');
-    return true;
-  };
-
-  // 비밀번호 입력 변경 시
   const handlePasswordChange = (e) => {
     const newPassword = e.target.value;
     setFormData((prevData) => ({
       ...prevData,
       password: newPassword,
     }));
-    validatePassword(newPassword); // 입력 시마다 유효성 검사
+    const { isValid, message } = validatePassword(newPassword);
+    setPasswordError(message);
   };
 
-  // 비밀번호 보이기/숨기기 토글
-  const togglePassword = () => {
+  const togglePassword = () => { // 이 함수도 사용되도록 아래 JSX에 추가됨
     setShowPassword((prev) => !prev);
   };
 
-  // Daum Postcode API 연동 (실제 구현 필요)
-  // 이 부분은 외부 라이브러리 스크립트 로드 및 콜백 함수 구현이 필요합니다.
-  // 여기서는 함수 정의만 해두고, 실제 사용 시 daumPostcode API 스크립트 로드 및 동작 확인 필요.
-  const daumPostcode = () => {
+  const daumPostcode = () => { // 이 함수도 사용되도록 아래 JSX에 추가됨
     new window.daum.Postcode({
       oncomplete: function(data) {
-        // 주소 검색 완료 시 실행될 로직
         let fullAddress = data.address;
         let extraAddress = '';
-
         if (data.addressType === 'R') {
-          if (data.bname !== '') {
-            extraAddress += data.bname;
-          }
-          if (data.buildingName !== '') {
-            extraAddress += (extraAddress !== '' ? ', ' : '') + data.buildingName;
-          }
+          if (data.bname !== '') { extraAddress += data.bname; }
+          if (data.buildingName !== '') { extraAddress += (extraAddress !== '' ? ', ' : '') + data.buildingName; }
           fullAddress += (extraAddress !== '' ? ' (' + extraAddress + ')' : '');
         }
-
         setFormData(prevData => ({
           ...prevData,
-          address: fullAddress, // 기본 주소
-          // zipcode: data.zonecode, // 우편번호도 필요하면 저장
+          address: fullAddress,
+          zipcode: data.zonecode,
         }));
       }
     }).open();
   };
-  // Daum Postcode 스크립트 로드를 위한 useEffect (보통 index.html 또는 최상위 컴포넌트에서)
-  // useEffect(() => {
-  //   const script = document.createElement('script');
-  //   script.src = "//t1.daumcdn.net/map_js_init/postcode.v2.js?autoload=false";
-  //   script.onload = () => {
-  //     // 스크립트 로드 완료 후 실행
-  //     window.daum.Postcode.load(() => {
-  //       // API 준비 완료
-  //     });
-  //   };
-  //   document.head.appendChild(script);
-  //   return () => {
-  //     document.head.removeChild(script);
-  //   };
-  // }, []);
 
-
-  // 폼 제출 핸들러
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => { // 이 함수도 사용되도록 아래 JSX에 추가됨
     e.preventDefault();
+    const { reporter_name, birth_date, mobile_number, address, password, car_registration_number, car_model, car_manufacturer } = formData;
 
-    // 비밀번호 유효성 다시 검사
-    if (!validatePassword(formData.password)) {
-      setSubmitError('비밀번호 유효성 검사에 실패했습니다.');
-      return;
+    if (!reporter_name || !birth_date || !mobile_number || !address || !password || !car_registration_number || !car_model || !car_manufacturer) {
+        setSubmitError("모든 필수 내용을 입력하셔야 합니다.");
+        return;
+    }
+
+    const { isValid: isPasswordValid } = validatePassword(password);
+    if (!isPasswordValid) {
+        setSubmitError("비밀번호 형식이 올바르지 않습니다.");
+        return;
     }
 
     setLoading(true);
@@ -187,29 +107,18 @@ function ReportDefectPage() {
     setSubmitSuccess(null);
 
     try {
-      const API_URL = 'http://localhost:8485/api/defect-reports'; // 예시 API 경로, 백엔드 경로로 변경 필요
-      
-      // 서버로 보낼 데이터 (필요 없는 display 필드 제외)
+      const API_URL = 'http://localhost:8485/api/defect_reports_ok';
       const dataToSend = { ...formData };
       delete dataToSend.mobile_number_display;
       delete dataToSend.phone_number_display;
-      // emailAddress, mailYn 같은 hidden 필드도 필요하면 FormData에 추가
-      // dataToSend.emailAddress = 'user@example.com'; // 실제 값으로 대체
-      // dataToSend.mailYn = 'N'; // 실제 값으로 대체
 
-      const response = await axios.post(API_URL, dataToSend); // JSON 형태로 전송
-
+      const response = await axios.post(API_URL, dataToSend);
       setSubmitSuccess(response.data || '결함 신고가 성공적으로 접수되었습니다.');
-      console.log('결함 신고 성공:', response.data);
-
-      // 성공 후 다른 페이지로 이동 (예: 신고 완료 페이지)
       setTimeout(() => {
-        navigate('/report-success'); // 임시 경로
+        navigate('/defect_reports_ok');
       }, 1500);
-
     } catch (err) {
-      setSubmitError(err.response?.data?.message || '결함 신고 중 오류가 발생했습니다.');
-      console.error('결함 신고 실패:', err.response?.data || err.message);
+      setSubmitError(err.response?.data || err.message || '결함 신고 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
@@ -241,13 +150,14 @@ function ReportDefectPage() {
 
       <section id="defect-report-section" className="defect-report-section section" style={{ padding: '40px 0' }}>
         <div className="container" data-aos="fade-up">
-          <div className="section-title text-center"> {/* class="container section-title" -> class="section-title text-center" 로 변경됨 */}
+          <div className="section-title text-center">
             <h2 className="title">정보 입력</h2>
           </div>
 
           <div className="widgets-container" style={{ textAlign: 'center' }}>
+            {/* 폼 제출 핸들러 연결 */}
             <form onSubmit={handleSubmit} className="uk-form-stacked">
-              <hr style={{ margin: 'auto' }} /> {/* margin:auto는 block 요소에만 적용되므로, style 속성에 직접 넣는 것이 더 낫습니다. */}
+              <hr style={{ margin: 'auto' }} />
 
               <table className="uk-table uk-table-divider table-form valickTbl1"
                      style={{ marginLeft: '35%', marginBottom: '5%', marginTop: '5%' }}>
@@ -263,7 +173,6 @@ function ReportDefectPage() {
                       <input type="text" id="name" name="reporter_name"
                              className="uk-input uk-form-width-medium"
                              value={formData.reporter_name} onChange={handleChange} required />
-                      <input type="hidden" id="sex" name="sex" value={formData.sex} />
                       <input type="hidden" id="ipAddress" name="ipAddress" value={formData.ipAddress} />
                     </td>
                   </tr>
@@ -297,7 +206,6 @@ function ReportDefectPage() {
                   <tr>
                     <th className="th">주소<i className="ion-ios7-checkmark-empty"></i></th>
                     <td className="td addr">
-                      {/* 우편번호 찾기 버튼 (Daum Postcode 연동 필요) */}
                       <p>
                         <input id="zipcode" name="zipcode" className="uk-input uk-form-width-medium reqed" title="주소" type="text" readOnly value={formData.zipcode || ''}/>
                         <button type="button" id="zipcodeBtn" onClick={daumPostcode} className="uk-button uk-button-secondary" style={{ marginLeft: '10px' }}>
@@ -306,7 +214,6 @@ function ReportDefectPage() {
                       </p>
                       <input id="addrBase" name="address" className="uk-input uk-form-width-large" type="text" placeholder="기본주소"
                              value={formData.address} onChange={handleChange} required />
-                      {/* <input id="addrDetail" name="address" className="uk-input uk-form-width-large" title="상세주소" type="text" placeholder="상세주소를 입력해주세요" maxLength="70"/> */}
                     </td>
                   </tr>
                   <input type="hidden" id="emailAddress" name="emailAddress" value={formData.emailAddress} />
@@ -354,9 +261,9 @@ function ReportDefectPage() {
                 </tbody>
               </table>
 
+              <h2>자동차 정보 입력</h2>
               <table className="uk-table uk-table-divider table-form valickTbl2"
                      style={{ marginLeft: '35%', marginBottom: '5%', marginTop: '5%' }}>
-                <h2>자동차 정보 입력</h2>
                 <hr />
                 <colgroup>
                   <col className="th" />
