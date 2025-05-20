@@ -2,6 +2,12 @@ FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
+# Node.js 설치를 위한 업데이트 및 설치
+RUN apt-get update && apt-get install -y curl \
+    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs \
+    && apt-get clean
+
 COPY . .
 
 RUN ls -l gradlew
