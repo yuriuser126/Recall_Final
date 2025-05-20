@@ -36,7 +36,9 @@ const menuItems = [
 function Header() {
   return (
     <header style={{ backgroundColor: '#333', color: 'white', padding: '10px', display: 'flex', alignItems: 'center' }}>
-      <h1 style={{ margin: 0 }}>My Awesome App</h1>
+      <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+        <h1 style={{ margin: 0 }}>Recall center</h1>
+      </Link>
 
       <nav id="navmenu" className="navmenu" style={{ marginLeft: 'auto' }}>
         <ul>
