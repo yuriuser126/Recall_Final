@@ -5,7 +5,7 @@ import MainLayout from './layout/MainLayout';
 import HomePage from './pages/HomePage';
 import UserProfilePage from './pages/UserProfilePage';
 import AnnouncePage from './pages/AnnouncePage'; // AnnouncePage import
-// import AnnounceViewPage from './pages/AnnounceViewPage'; // AnnounceViewPage (가정)
+import AnnounceViewPage from './pages/AnnounceViewPage'; // AnnounceViewPage import
 import { fetchTestData } from './services/api';
 import './styles/App.css';
 
@@ -43,8 +43,7 @@ const [backendData, setBackendData] = useState(null);
           <Route path="/" element={<HomePage />} />
           <Route path="/profile" element={<UserProfilePage />} />
           <Route path="/announce" element={<AnnouncePage />} /> {/* 공지사항 페이지 라우트 */}
-          {/* <Route path="/announce_view/:id" element={<AnnounceViewPage />} /> 공지사항 상세 페이지 라우트 (가정) */}
-          {/* 기타 라우트들 */}
+          <Route path="/announce_view/:id" element={<AnnounceViewPage />} /> 
         </Routes>
 
 

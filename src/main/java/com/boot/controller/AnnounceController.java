@@ -71,8 +71,8 @@ public class AnnounceController {
 	public String announce_view(@RequestParam HashMap<String, String> param, Model model){
 		log.info("@# announce_view");
 		
-		AnnounceDTO dto = service.announce_view(param);
-		model.addAttribute("announce_view", dto);
+//		AnnounceDTO dto = service.announce_view(param);
+//		model.addAttribute("announce_view", dto);
 		
 //		content_view.jsp 에서 pageMaker 를 가지고 페이징 처리 
 		model.addAttribute("pageMaker", param);
