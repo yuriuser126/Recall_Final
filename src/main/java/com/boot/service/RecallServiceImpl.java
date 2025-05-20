@@ -251,4 +251,16 @@ public class RecallServiceImpl implements RecallService{
 		return dao.findById(id);
 	}
 
+	@Override
+	public List<Defect_DetailsDTO> getAllRecallByCri(Criteria cri) {
+		RecallStaticDAO dao = sqlSession.getMapper(RecallStaticDAO.class);
+		return dao.getListWithPaging(cri);
+	}
+
+	@Override
+	public int getRecallTotalCount(Criteria cri) {
+		RecallStaticDAO dao = sqlSession.getMapper(RecallStaticDAO.class);
+		return dao.getTotalCount(cri);
+	}	
+	
 }
