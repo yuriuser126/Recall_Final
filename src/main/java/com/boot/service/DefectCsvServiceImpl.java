@@ -26,10 +26,8 @@ public class DefectCsvServiceImpl implements DefectCsvService{
 
 	@Override
 	public List<Defect_DetailsDTO> getAllDefects() {
-		 // XML 파싱 로직 (여기선 예시 데이터)
-        List<Defect_DetailsDTO> list = new ArrayList<>();
-//        list.add(new Defect_DetailsDTO(1, "공기청정기", "Samsung", "2023-01", "AirPure", "의무", "080-111-2222", "모터 과열"));
-        return list;
+	    // DB에서 전체 결함 데이터를 조회하는 로직
+	    return defectCsvDAO.getAllDefects();  // DAO에 전체 조회 메서드가 있어야 함
 	}
 	
 	 @Override
