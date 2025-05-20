@@ -1,5 +1,6 @@
 package com.boot.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,9 +30,12 @@ import com.boot.dto.DefectListDTO;
 import com.boot.dto.Defect_DetailsDTO;
 import com.boot.dto.Defect_ReportsDTO; // DTO 임포트 확인
 import com.boot.dto.PageDTO;
+import com.boot.dto.SyncDTO;
 import com.boot.service.DefactService;
 import com.boot.service.DefectListService;
 import com.boot.service.PageService;
+import com.boot.service.RecallService;
+import com.boot.service.RecallServiceImpl.XmlParserUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,6 +52,9 @@ public class ReactDefectController {
 	
 	@Autowired
 	private PageService pageService;
+	
+	@Autowired
+    private RecallService recallService;
 	
     // 기존 insertDefect (HTML 폼 제출용)
     @RequestMapping("/insertDefect")
@@ -234,4 +241,158 @@ public class ReactDefectController {
             return new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+ // 리콜 목록 조회 API
+    @GetMapping("/recall_list")
+    public ResponseEntity<Map<String, Object>> getRecallList(Criteria cri) {
+        log.info("@# getRecallList() 호출. 현재 검색/페이징 조건: {}", cri);
+        try {
+            List<Defect_DetailsDTO> recallList = recallService.getAllRecallByCri(cri); // 서비스에서 목록 조회
+            int total = recallService.getRecallTotalCount(cri); // 서비스에서 전체 개수 조회
+            log.info("@# 전체 리콜 개수: {}", total);
+
+            PageDTO pageMaker = new PageDTO(total, cri); // PageDTO 생성
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("list", recallList);
+            response.put("pageMaker", pageMaker);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("@# 리콜 목록 조회 중 오류 발생: {}", e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // (선택) 리콜 상세 정보 조회 API
+    @GetMapping("/recall_detail/{id}")
+    public ResponseEntity<Defect_DetailsDTO> getRecallDetail(@PathVariable("id") Long id) {
+        log.info("@# getRecallDetail() 호출. ID: {}", id);
+        try {
+        	Defect_DetailsDTO recall = recallService.getRecallById(id); // 서비스에서 단일 리콜 DTO 조회
+            if (recall != null) {
+                return new ResponseEntity<>(recall, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            log.error("@# 리콜 상세 정보 조회 중 오류 발생: {}", e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // CSV 전체 다운로드 API
+    @GetMapping("/recall/downloadCsv")
+    public ResponseEntity<byte[]> downloadRecallCsv() {
+        try {
+            byte[] csvBytes = recallService.generateCsvReport(); // 서비스에서 CSV 데이터 생성
+            return ResponseEntity.ok()
+                    .header("Content-Disposition", "attachment; filename=\"recall_list.csv\"")
+                    .contentType(org.springframework.http.MediaType.parseMediaType("text/csv"))
+                    .body(csvBytes);
+        } catch (IOException e) {
+            log.error("@# CSV 파일 생성 또는 다운로드 중 오류 발생: {}", e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+//    // 엑셀 전체 다운로드 API
+//    @GetMapping("/recall/downloadExcel")
+//    public ResponseEntity<byte[]> downloadRecallExcel() {
+//        try {
+//            byte[] excelBytes = recallService.generateExcelReport(); // 서비스에서 엑셀 데이터 생성
+//            return ResponseEntity.ok()
+//                    .header("Content-Disposition", "attachment; filename=\"recall_list.xlsx\"")
+//                    .contentType(org.springframework.http.MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+//                    .body(excelBytes);
+//        } catch (IOException e) {
+//            log.error("@# 엑셀 파일 생성 또는 다운로드 중 오류 발생: {}", e.getMessage(), e);
+//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+//    
+//	API -> DB 저장 메서드 (100건 테스트용)
+	@ResponseBody
+	@GetMapping("/recall/save")
+	public String saveToDb() throws Exception {
+		String cntntsId = "0301";
+		Criteria cri = new Criteria(1, 100); // 1페이지, 100건
+		String xml = recallService.fetchXmlFromApi(cri, cntntsId);
+		List<Defect_DetailsDTO> list = XmlParserUtil.parseToList(xml);
+		recallService.saveApiDataToDB(list);
+		return "DB 저장 완료 (" + list.size() + "건)";
+	}
+	
+	//	API -> DB 저장 메서드 (전체)
+	@ResponseBody
+	@GetMapping("/recall/saveAll")
+	public String saveAllToDb() throws Exception {
+		String cntntsId = "0301";
+		int perPage = 100;
+
+		// 1페이지 먼저 요청 → 전체 건수(totalCount) 파악
+		Criteria cri = new Criteria(1, perPage);
+		String firstXml = recallService.fetchXmlFromApi(cri, cntntsId);
+		int total = XmlParserUtil.getTotalCount(firstXml);
+		int totalPages = (int) Math.ceil((double) total / perPage);
+
+		int savedCount = 0;
+
+		for (int page = 1; page <= totalPages; page++) {
+			Criteria pageCri = new Criteria(page, perPage);
+			String xml = recallService.fetchXmlFromApi(pageCri, cntntsId);
+			List<Defect_DetailsDTO> list = XmlParserUtil.parseToList(xml);
+			recallService.saveApiDataToDB(list);
+			savedCount += list.size();
+			
+			log.info(">>> " + page + "페이지 처리 완료 (" + list.size() + "건)");
+		}
+		
+		System.out.println("totalCount: " + total);
+		return "전체 저장 완료! 총 " + savedCount + "건 저장됨.";
+	}
+
+//	API 동기화 메서드 (100건 테스트용)
+	@GetMapping("/recall/sync")
+	@ResponseBody
+	public String syncData() throws Exception {
+		String xml = recallService.fetchXmlFromApi(new Criteria(1, 100), "0301");
+		List<Defect_DetailsDTO> list = XmlParserUtil.parseToList(xml);
+		SyncDTO result = recallService.syncApiDataWithDB(list);
+		return "동기화 완료! " + result.toString();
+	}
+	
+//	API 동기화 메서드 (전체)
+	@GetMapping("/recall/syncAll")
+	@ResponseBody
+	public String syncAllToDb() throws Exception {
+		String cntntsId = "0301";
+		int perPage = 100;
+
+		// 먼저 1페이지 호출해서 전체 개수 파악
+		Criteria cri = new Criteria(1, perPage);
+		String firstXml = recallService.fetchXmlFromApi(cri, cntntsId);
+		int total = XmlParserUtil.getTotalCount(firstXml);
+		int totalPages = (int) Math.ceil((double) total / perPage);
+
+		int inserted = 0, updated = 0, skipped = 0;
+
+		for (int page = 1; page <= totalPages; page++) {
+			Criteria pageCri = new Criteria(page, perPage);
+			String xml = recallService.fetchXmlFromApi(pageCri, cntntsId);
+			List<Defect_DetailsDTO> list = XmlParserUtil.parseToList(xml);
+
+			SyncDTO result = recallService.syncApiDataWithDB(list);
+
+			inserted += result.getInserted();
+			updated += result.getUpdated();
+			skipped += result.getSkipped();
+
+			System.out.println(page + "페이지 완료: [insert " + result.getInserted()
+					+ ", update " + result.getUpdated() + ", skip " + result.getSkipped() + "]");
+		}
+
+		return "전체 동기화 완료! 총 insert: " + inserted + ", update: " + updated + ", skip: " + skipped;
+	}
+	
 }

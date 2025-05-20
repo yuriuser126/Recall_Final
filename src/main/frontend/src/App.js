@@ -14,6 +14,7 @@ import DefectReportListPage from './pages/DefectReportList';
 import DefectDetail from './pages/DefectDetail';
 import DefectPasswordCheck from './pages/DefectPasswordCheck';
 import DefectModify from './pages/DefectModify';
+import RecallList from './pages/RecallList'
 import { fetchTestData } from './services/api';
 import './styles/App.css';
 
@@ -47,6 +48,7 @@ const [backendData, setBackendData] = useState(null);
           <Route path="/defect_detail/:id" element={<DefectDetail />} />
           <Route path="/defect_pwcheck/:id" element={<DefectPasswordCheck />} />
           <Route path="/defect_modify/:id" element={<DefectModify />} />
+          <Route path="/recall_list" element={<RecallList />} />
         </Routes>
 
 
