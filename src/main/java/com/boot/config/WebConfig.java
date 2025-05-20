@@ -2,7 +2,10 @@ package com.boot.config; // 패키지명은 당신의 프로젝트 구조에 맞
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import com.boot.security.JwtInterceptor;
 
 @Configuration // 이 클래스가 Spring 설정 클래스임을 명시
 public class WebConfig implements WebMvcConfigurer {
@@ -16,4 +19,11 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowCredentials(true) // 자격 증명(쿠키, HTTP 인증 등) 허용
                 .maxAge(3600); // Preflight 요청 결과를 1시간 동안 캐시
     }
+    
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(new JwtInterceptor())
+			.addPathPatterns("/admin/**")     // /admin 경로 하위는 모두 인터셉트
+			.excludePathPatterns("/admin/login"); // 로그인은 제외
+	} 
 }

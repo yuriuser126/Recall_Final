@@ -11,5 +11,6 @@
 		<mapper resource="mybatis/mappers/recallstatic.xml"/>
 		<mapper resource="mybatis/mappers/faqann.xml"/>
 		<mapper resource="mybatis/mappers/recallCount.xml"/>
+		<mapper resource="mybatis/mappers/security.xml"/>
 	</mappers>
 </configuration>
