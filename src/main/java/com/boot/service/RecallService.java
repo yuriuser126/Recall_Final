@@ -26,7 +26,7 @@ public interface RecallService {
 
     List<Defect_DetailsDTO> getAllRecalls(); // DB의 recall 모두 select
     Defect_DetailsDTO getRecallById(Long id); // DB의 recall 하나를 id 기반 select
-    List<Integer> getSimilarRecallIds(int targetId); // 유사 리콜 id 추천
+    List<Integer> getSimilarRecallIds(Long targetId); // 유사 리콜 id 추천
 	List<Defect_DetailsDTO> getAllRecallByCri(Criteria cri); // DB의 recall 모두 cri 기반 select
 	int getRecallTotalCount(Criteria cri);    
 	

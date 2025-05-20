@@ -206,15 +206,57 @@
 		WHERE id = #{id}
 	</select>
 	
-	<select id="getListWithPaging" resultType="com.boot.dto.Defect_DetailsDTO">
-		SELECT * FROM defect_details
-		ORDER BY id
-		LIMIT #{amount} OFFSET #{offset}
-	</select>
+<!--	<select id="getListWithPaging" resultType="com.boot.dto.Defect_DetailsDTO">-->
+<!--		SELECT * FROM defect_details-->
+<!--		ORDER BY id-->
+<!--		LIMIT #{amount} OFFSET #{offset}-->
+<!--	</select>-->
 	
-	<select id="getTotalCount" resultType="int">
-		SELECT COUNT(*) FROM defect_details
-	</select>
+<!--	<select id="getTotalCount" resultType="int">-->
+<!--		SELECT COUNT(*) FROM defect_details-->
+<!--	</select>-->
+	
+	<select id="getListWithPaging" resultType="com.boot.dto.Defect_DetailsDTO"> SELECT id, product_name, manufacturer, manufacturing_period, additional_info, model_name, recall_type, contact_info
+        FROM defect_details WHERE 1=1
+        <if test="type != null and keyword != null and keyword != ''">
+            <choose>
+                <when test="type == 'product_name'">
+                    AND product_name LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+                <when test="type == 'manufacturer'">
+                    AND manufacturer LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+                <when test="type == 'model_name'">
+                    AND model_name LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+                <when test="type == 'recall_type'">
+                    AND recall_type LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+                </choose>
+        </if>
+        ORDER BY id DESC
+        LIMIT #{amount} OFFSET #{offset}
+    </select>
 
+    <select id="getTotalCount" resultType="int">
+        SELECT COUNT(*)
+        FROM defect_details WHERE 1=1
+        <if test="type != null and keyword != null and keyword != ''">
+            <choose>
+                <when test="type == 'product_name'">
+                    AND product_name LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+                <when test="type == 'manufacturer'">
+                    AND manufacturer LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+                <when test="type == 'model_name'">
+                    AND model_name LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+                <when test="type == 'recall_type'">
+                    AND recall_type LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+            </choose>
+        </if>
+    </select>
 	
 </mapper>

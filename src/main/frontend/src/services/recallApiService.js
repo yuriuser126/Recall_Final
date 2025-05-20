@@ -1,18 +1,19 @@
 // src/services/recallApiService.js
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8485/api'; // Spring Boot API 기본 URL
+const API_BASE_URL = 'http://localhost:8485/api'; 
 
-// 리콜 목록을 가져오는 함수
+// 리콜 목록을 가져오는 함수 (검색 조건 포함)
 export const fetchRecallReports = async (searchCriteria) => {
     try {
         const params = new URLSearchParams();
+        // searchCriteria의 모든 유효한 속성을 URL 파라미터로 추가
         for (const key in searchCriteria) {
             if (searchCriteria[key] !== '' && searchCriteria[key] !== null && searchCriteria[key] !== undefined) {
                 params.append(key, searchCriteria[key]);
             }
         }
-        // 예시: GET /api/recall_list?pageNum=1&amount=10&type=&keyword=
+        // 예시: GET /api/recall_list?pageNum=1&amount=10&type=manufacturer&keyword=현대
         const response = await axios.get(`${API_BASE_URL}/recall_list?${params.toString()}`);
         return response.data; // { list: [...], pageMaker: {...} } 형태를 예상
     } catch (error) {
@@ -20,12 +21,18 @@ export const fetchRecallReports = async (searchCriteria) => {
         throw error;
     }
 };
-
-// 리콜 상세 정보를 가져오는 함수 (필요시 추가)
+/**
+ * 특정 ID의 리콜 상세 정보를 가져옵니다.
+ * @param {string} id 조회할 리콜 ID
+ * @returns {Promise<{recall: object, similarIds: string[]}>} 리콜 상세 정보 및 유사 리콜 ID 목록
+ */
 export const fetchRecallDetail = async (id) => {
     try {
+        // 예시: GET /api/recall_detail/123
         const response = await axios.get(`${API_BASE_URL}/recall_detail/${id}`);
-        return response.data; // 단일 DTO 객체를 예상
+        // 서버 응답 형태를 { recall: { ... }, similarIds: [...] } 로 가정합니다.
+        // 실제 서버 응답 형태에 따라 이 부분을 조정해야 합니다.
+        return response.data;
     } catch (error) {
         console.error(`Failed to fetch recall detail for ID ${id}:`, error);
         throw error;
@@ -77,3 +84,4 @@ export const downloadRecallExcel = async () => {
         throw error;
     }
 };
+

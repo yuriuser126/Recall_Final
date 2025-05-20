@@ -3,47 +3,46 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 // import { format } from 'date-fns'; // 필요시 사용 (리콜 데이터에 날짜 필드가 있다면)
 
-import Pagination from '../components/Pagination'; // 기존에 구현된 Pagination 컴포넌트 재활용
+import Pagination from '../components/Pagination';
+import RecallListSearch from '../components/RecallListSearch'; // 새로 만든 검색 컴포넌트 임포트
 
-// 리콜 API 서비스를 임포트합니다.
 import { fetchRecallReports, downloadRecallCsv, downloadRecallExcel } from '../services/recallApiService';
 
 function RecallList() {
     const navigate = useNavigate();
-    const [searchParams, setSearchParams] = useSearchParams(); // URL 쿼리 파라미터 관리
+    const [searchParams, setSearchParams] = useSearchParams();
 
     // 초기 검색/페이징 조건 설정 (URL 파라미터에서 읽어옴)
     const getInitialSearchCriteria = useCallback(() => {
         return {
-            type: searchParams.get('type') || '',      // 검색 타입 (예: 모델명, 제조사)
-            keyword: searchParams.get('keyword') || '',// 검색 키워드
-            pageNum: parseInt(searchParams.get('pageNum') || '1', 10), // 페이지 번호
-            amount: parseInt(searchParams.get('amount') || '10', 10),   // 한 페이지당 항목 수
+            type: searchParams.get('type') || '',
+            keyword: searchParams.get('keyword') || '',
+            pageNum: parseInt(searchParams.get('pageNum') || '1', 10),
+            amount: parseInt(searchParams.get('amount') || '10', 10),
         };
     }, [searchParams]);
 
     const [searchCriteria, setSearchCriteria] = useState(getInitialSearchCriteria);
-    const [recallList, setRecallList] = useState([]); // 리콜 목록 데이터를 저장할 상태
-    const [pageMaker, setPageMaker] = useState({    // 페이징 정보를 저장할 상태
+    const [recallList, setRecallList] = useState([]);
+    const [pageMaker, setPageMaker] = useState({
         startPage: 1,
         endPage: 1,
         prev: false,
         next: false,
         total: 0,
-        cri: { pageNum: 1, amount: 10, type: '', keyword: '' }, // 현재 Cri 객체
+        cri: { pageNum: 1, amount: 10, type: '', keyword: '' },
     });
-    const [loading, setLoading] = useState(false); // 로딩 상태
-    const [error, setError] = useState(null);   // 에러 상태
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    // 데이터를 실제로 로드하는 함수
     const loadRecallReports = useCallback(async (currentCriteria) => {
         setLoading(true);
         setError(null);
         try {
-            const data = await fetchRecallReports(currentCriteria); // API 서비스 호출
+            const data = await fetchRecallReports(currentCriteria);
 
-            setRecallList(data.list || []); // <--- 서버 응답에서 'list' 키를 기대합니다.
-            setPageMaker(data.pageMaker || { // <--- 서버 응답에서 'pageMaker' 키를 기대합니다.
+            setRecallList(data.list || []);
+            setPageMaker(data.pageMaker || {
                 startPage: 1, endPage: 1, prev: false, next: false, total: 0, cri: currentCriteria
             });
 
@@ -66,28 +65,37 @@ function RecallList() {
         }
     }, [setSearchParams]);
 
-    // 컴포넌트 마운트 시 또는 URL 파라미터 변경 시 데이터 로드
     useEffect(() => {
         const initialCri = getInitialSearchCriteria();
-        setSearchCriteria(initialCri); // 초기 상태 업데이트
-        loadRecallReports(initialCri); // 초기 데이터 로드
+        setSearchCriteria(initialCri);
+        loadRecallReports(initialCri);
     }, [getInitialSearchCriteria, loadRecallReports]);
 
-    // 페이지 변경 핸들러 (Pagination 컴포넌트에서 호출)
-    const handlePageChange = useCallback((newCri) => {
-        setSearchCriteria(newCri); // 새로운 Cri 객체로 상태 업데이트
-        loadRecallReports(newCri); // 업데이트된 Cri로 API 호출
+    // 검색 조건 변경 핸들러 (RecallListSearch 컴포넌트에서 호출)
+    const handleSearchChange = useCallback((newCri) => {
+        // 검색 필드의 임시 변경만 반영 (즉시 API 호출하지 않음)
+        setSearchCriteria(newCri);
+    }, []);
+
+    // 검색 제출 핸들러 (RecallListSearch 컴포넌트에서 호출)
+    const handleSearchSubmit = useCallback((newCri) => {
+        // 검색 조건을 최종적으로 적용하고 페이지를 1로 초기화하여 데이터 로드
+        setSearchCriteria(newCri);
+        loadRecallReports(newCri);
     }, [loadRecallReports]);
 
-    // 리콜 상세 페이지로 이동
+    const handlePageChange = useCallback((newCri) => {
+        setSearchCriteria(newCri);
+        loadRecallReports(newCri);
+    }, [loadRecallReports]);
+
     const handleRowClick = (id) => {
-        navigate(`/recall_detail/${id}`); // 상세 페이지 경로 예시
+        navigate(`/recall_detail/${id}`);
     };
 
-    // CSV 다운로드 버튼 핸들러
     const handleDownloadCsv = async () => {
         try {
-            await downloadRecallCsv(); // CSV 다운로드 API 호출
+            await downloadRecallCsv();
             alert("CSV 파일 다운로드를 시작합니다.");
         } catch (err) {
             console.error("CSV 다운로드 실패:", err);
@@ -95,10 +103,9 @@ function RecallList() {
         }
     };
 
-    // 엑셀 다운로드 버튼 핸들러
     const handleDownloadExcel = async () => {
         try {
-            await downloadRecallExcel(); // 엑셀 다운로드 API 호출
+            await downloadRecallExcel();
             alert("엑셀 파일 다운로드를 시작합니다.");
         } catch (err) {
             console.error("엑셀 다운로드 실패:", err);
@@ -141,8 +148,12 @@ function RecallList() {
                     </div>
 
                     <div className="widgets-container">
-                        {/* 검색 컴포넌트가 있다면 여기에 추가 (DefectListSearch와 유사하게) */}
-                        {/* <RecallListSearch searchCriteria={searchCriteria} onSearchChange={handleSearchChange} onSearchSubmit={handleSearchSubmit} /> */}
+                        {/* 검색 컴포넌트 추가 */}
+                        <RecallListSearch
+                            searchCriteria={searchCriteria}
+                            onSearchChange={handleSearchChange}
+                            onSearchSubmit={handleSearchSubmit}
+                        />
 
                         <table className="table-custom" style={{ width: '100%', margin: '0 auto', borderCollapse: 'collapse' }}>
                             <thead>

@@ -232,7 +232,7 @@ public class RecallServiceImpl implements RecallService{
 
 	
 	@Override
-	public List<Integer> getSimilarRecallIds(int targetId) {
+	public List<Integer> getSimilarRecallIds(Long targetId) {
 		String apiUrl = "http://localhost:5000/recommend?id=" + targetId;
 
 		RestTemplate restTemplate = new RestTemplate();

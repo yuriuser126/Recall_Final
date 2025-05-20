@@ -230,12 +230,12 @@ public class RecallController {
 //		return "전체 동기화 완료! 총 insert: " + inserted + ", update: " + updated + ", skip: " + skipped;
 //	}
 //	
-	// 테스트용
-	@GetMapping("/recall/similar/{id}")
-	@ResponseBody
-	public List<Integer> getSimilarRecalls(@PathVariable("id") int id) {
-		return recallService.getSimilarRecallIds(id);
-	}
+//	// 테스트용
+//	@GetMapping("/recall/similar/{id}")
+//	@ResponseBody
+//	public List<Integer> getSimilarRecalls(@PathVariable("id") int id) {
+//		return recallService.getSimilarRecallIds(id);
+//	}
 
 //	// 상세 페이지
 //	@GetMapping("/recall_detail_{id}")
