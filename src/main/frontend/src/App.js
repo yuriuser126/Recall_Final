@@ -10,7 +10,8 @@ import FaqPage from './pages/FaqPage'; // FaqPage import
 import FaqWritePage from './pages/FaqWritePage';
 import AnnounceWritePage from './pages/AnnounceWritePage';
 import ReportDefectPage from './pages/ReportDefectPage';
-
+import DefectReportListPage from './pages/DefectReportList';
+import DefectDetail from './pages/DefectDetail';
 import { fetchTestData } from './services/api';
 import './styles/App.css';
 
@@ -40,6 +41,8 @@ const [backendData, setBackendData] = useState(null);
           <Route path="/notice_write" element={<FaqWritePage />} />
           <Route path="/announce_write" element={<AnnounceWritePage />} /> 
           <Route path="/defect_reports" element={<ReportDefectPage />} />
+          <Route path="/defect_list" element={<DefectReportListPage />} />
+          <Route path="/defect_detail/:id" element={<DefectDetail />} />
         </Routes>
 
 

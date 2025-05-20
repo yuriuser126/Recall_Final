@@ -11,7 +11,7 @@ const menuItems = [
     link: '#', // 드롭다운 부모는 링크 없이 #로 설정하거나, 첫 자식 링크로 설정
     children: [
       { label: '결함신고', link: '/defect_reports' },
-      { label: '신고내역조회', link: '/defectList' },
+      { label: '신고내역조회', link: '/defect_list' },
     ],
   },
   {

@@ -32,9 +32,9 @@ public class DefectListServiceImpl implements DefectListService{
 
 
 	@Override
-	public DefectListDTO defectView(HashMap<String, String> param) {
+	public DefectListDTO defectView(Long id) {
 		DefectListDAO dao=sqlSession.getMapper(DefectListDAO.class);
-		DefectListDTO dto = dao.defectView(param);
+		DefectListDTO dto = dao.defectView(id);
 		
 		return dto;
 	}

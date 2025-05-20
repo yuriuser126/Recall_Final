@@ -9,7 +9,7 @@ public interface DefectListService {
 	public ArrayList<DefectListDTO> defectList();
 //	public void write(HashMap<String, String> param);
 //	public void write(DefectListDTO defectListDTO);
-	public DefectListDTO defectView(HashMap<String, String> param);
+	public DefectListDTO defectView(Long id);
 	public DefectListDTO defect_modify(HashMap<String, String> param);
 	public void modify(HashMap<String, String> param);
 	public void delete(HashMap<String, String> param);
