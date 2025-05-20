@@ -7,6 +7,8 @@ plugins {
 
 group = 'com.boot'
 version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'  // JDK 버전에 맞게 수정 : aws 배포
+
 
 java {
 	toolchain {
@@ -36,6 +38,7 @@ dependencies {
 	implementation 'commons-codec:commons-codec:1.15'	// hashcode 사용을 위해 추가
 	implementation 'org.apache.poi:poi:5.2.3'
 	implementation 'org.apache.poi:poi-ooxml:5.2.3' //엑셀파일 다운로드 위해 추가
+	implementation 'org.springframework.boot:spring-boot-starter-web' //aws 배포
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
@@ -47,4 +50,12 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.named('bootJar') {
+    enabled = true
+}
+
+tasks.named('jar') {
+    enabled = false
 }
