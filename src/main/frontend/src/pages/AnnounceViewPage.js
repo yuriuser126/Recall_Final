@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { fetchAnnouncementDetail } from '../services/announceService';
+import { formatDateTime } from '../utils/formatters';
 
 function AnnounceViewPage() {
   const { id } = useParams();
@@ -60,7 +61,7 @@ function AnnounceViewPage() {
   return (
     <div className="announce-detail-page" style={{ padding: '20px', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
       <h2>{announce.title}</h2>
-      <p style={{ color: '#666', fontSize: '0.9em' }}>작성일: {announce.created_at}</p>
+      <p style={{ color: '#666', fontSize: '0.9em' }}>작성일: {formatDateTime(announce.created_at)}</p>
       <hr style={{ borderTop: '1px solid #eee', margin: '20px 0' }} />
       <div className="announce-content" dangerouslySetInnerHTML={{ __html: announce.content }} style={{ lineHeight: '1.6' }}>
         {/* 보안 유의 */}

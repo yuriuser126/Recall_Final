@@ -24,5 +24,9 @@ public class Criteria {
 		this.amount = amount;
 	}
 	
+	public int getOffset() {
+		return (pageNum - 1) * amount;
+	}
+	
 	
 }

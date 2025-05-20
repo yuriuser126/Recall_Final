@@ -8,6 +8,9 @@ import AnnouncePage from './pages/AnnouncePage'; // AnnouncePage import
 import AnnounceViewPage from './pages/AnnounceViewPage'; // AnnounceViewPage import
 import FaqPage from './pages/FaqPage'; // FaqPage import
 import FaqWritePage from './pages/FaqWritePage';
+import AnnounceWritePage from './pages/AnnounceWritePage';
+import ReportDefectPage from './pages/ReportDefectPage';
+
 import { fetchTestData } from './services/api';
 import './styles/App.css';
 
@@ -27,19 +30,6 @@ const [backendData, setBackendData] = useState(null);
   return (
     <Router>
       <MainLayout>
-        {/* 네비게이션은 Header 컴포넌트 내부에서 처리되므로 여기서는 삭제하거나 변경 */}
-        {/* 기존 App.js의 <nav> 부분은 Header.js로 옮겨졌습니다. */}
-        {/* 만약 App.js에서 라우팅을 테스트할 메뉴가 필요하면 여기에 추가 가능 */}
-        {/* 예를 들어, AnnouncePage로 가는 링크 추가: */}
-        <nav>
-          <ul>
-            <li><Link to="/">홈</Link></li>
-            <li><Link to="/profile">프로필</Link></li>
-            <li><Link to="/announce">공지사항</Link></li> {/* 공지사항 링크 추가 */}
-          </ul>
-        </nav>
-
-
 
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -48,6 +38,8 @@ const [backendData, setBackendData] = useState(null);
           <Route path="/announce_view/:id" element={<AnnounceViewPage />} /> 
           <Route path="/notice" element={<FaqPage />} /> 
           <Route path="/notice_write" element={<FaqWritePage />} />
+          <Route path="/announce_write" element={<AnnounceWritePage />} /> 
+          <Route path="/defect_reports" element={<ReportDefectPage />} />
         </Routes>
 
 
