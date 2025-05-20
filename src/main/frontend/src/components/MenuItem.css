@@ -1,0 +1,61 @@
+/* components/MenuItem.css */
+.nav-item {
+  position: relative;
+  list-style: none; /* ul의 기본 리스트 스타일 제거 */
+}
+
+.nav-item a {
+  display: block;
+  padding: 10px 15px;
+  color: white;
+  text-decoration: none;
+  white-space: nowrap; /* 링크 텍스트가 줄바꿈되지 않도록 */
+}
+
+.nav-item a:hover {
+  background-color: #555;
+}
+
+/* 드롭다운 메뉴 스타일 */
+.nav-item.dropdown .dropdown-menu {
+  display: block; /* JavaScript로 제어 */
+  position: absolute;
+  top: 100%; /* 부모 메뉴 아래에 위치 */
+  left: 0;
+  background-color: #444;
+  min-width: 180px; /* 드롭다운 메뉴의 최소 너비 */
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1; /* 다른 요소 위에 표시되도록 */
+  list-style: none; /* ul의 기본 리스트 스타일 제거 */
+  padding: 0; /* ul의 기본 패딩 제거 */
+  margin: 0; /* ul의 기본 마진 제거 */
+}
+
+.nav-item.dropdown .dropdown-menu li a {
+  padding: 10px 15px;
+  color: white;
+}
+
+.nav-item.dropdown .dropdown-menu li a:hover {
+  background-color: #666;
+}
+
+/* 드롭다운 토글 아이콘 */
+.nav-item.dropdown .toggle-dropdown {
+  margin-left: 5px;
+  font-size: 0.8em;
+  transition: transform 0.3s ease;
+}
+
+/* 드롭다운이 열렸을 때 아이콘 회전 (선택 사항) */
+/* .nav-item.dropdown.open .toggle-dropdown {
+  transform: rotate(180deg);
+} */
+
+/* 기본 ul li 스타일 제거 (App.css 또는 global.css에 추가해도 됨) */
+.navmenu ul {
+  display: flex; /* 메뉴 아이템을 가로로 정렬 */
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
