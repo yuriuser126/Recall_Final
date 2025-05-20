@@ -32,6 +32,6 @@ public interface RecallService {
 	
 	//react용
 	public byte[] generateCsvReport() throws IOException;
-	public byte[] generateExcelReport();
+
 
 }

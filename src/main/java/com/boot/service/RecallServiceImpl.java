@@ -311,10 +311,5 @@ public class RecallServiceImpl implements RecallService{
         return cleanedText.trim();
     }
 
-	@Override
-	public byte[] generateExcelReport() {
-		// TODO Auto-generated method stub
-		return null;
-	}	
 	
 }
