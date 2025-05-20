@@ -7,10 +7,10 @@ import './App.css'
 function App() {
   //변수
   let post ="제목";
-  // let [변수명,함수명]  =useState(배열 가능능);
+  // let [변수명,함수명]  =useState(배열 가능);
   let [글제목,글제목변경]=useState(['state입니다','state입니다2','state입니다3']);
   let [따봉,따봉변경]=useState(0);
-
+  
   return (
       <div className="App">
         <div className="black-nav">
@@ -38,8 +38,7 @@ function App() {
           <h4>{글제목[2]}</h4>
         </div>
 
-        <Modal></Modal>
-        <Modal></Modal>
+
         <Modal/>
 
       </div>
@@ -50,6 +49,7 @@ function App() {
 //1.반복 2.페이지전환 큰페이지 하나를 컴포넌트로 제작 3.자주 변경되는UI
 //위에 만든 state 사용 못함
 function Modal(){
+
   return(
     <>
       <div className="modal">
