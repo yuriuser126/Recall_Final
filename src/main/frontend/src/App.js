@@ -6,6 +6,8 @@ import HomePage from './pages/HomePage';
 import UserProfilePage from './pages/UserProfilePage';
 import AnnouncePage from './pages/AnnouncePage'; // AnnouncePage import
 import AnnounceViewPage from './pages/AnnounceViewPage'; // AnnounceViewPage import
+import FaqPage from './pages/FaqPage'; // FaqPage import
+import FaqWritePage from './pages/FaqWritePage';
 import { fetchTestData } from './services/api';
 import './styles/App.css';
 
@@ -42,8 +44,10 @@ const [backendData, setBackendData] = useState(null);
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/profile" element={<UserProfilePage />} />
-          <Route path="/announce" element={<AnnouncePage />} /> {/* 공지사항 페이지 라우트 */}
+          <Route path="/announce" element={<AnnouncePage />} /> 
           <Route path="/announce_view/:id" element={<AnnounceViewPage />} /> 
+          <Route path="/notice" element={<FaqPage />} /> 
+          <Route path="/notice_write" element={<FaqWritePage />} />
         </Routes>
 
 

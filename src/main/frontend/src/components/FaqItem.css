@@ -1,0 +1,39 @@
+/* components/FaqItem.css */
+.faq-item {
+  border-bottom: 1px solid #eee;
+  padding: 20px 0;
+  transition: all 0.3s ease;
+}
+
+.faq-item h3 {
+  font-size: 1.2em;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  position: relative; /* 토글 아이콘 위치 지정을 위해 */
+  padding-right: 30px; /* 아이콘 공간 확보 */
+}
+
+.faq-item h3 span {
+  flex-grow: 1; /* 질문 텍스트가 공간을 채우도록 */
+}
+
+.faq-item .faq-toggle {
+  position: absolute;
+  right: 0;
+  font-size: 1.5em;
+  color: #666;
+  transition: transform 0.3s ease;
+}
+
+.faq-item.active .faq-toggle {
+  transform: rotate(90deg); /* 활성화 시 아이콘 회전 */
+}
+
+.faq-item .faq-content {
+  margin-top: 10px;
+  color: #555;
+  font-size: 0.95em;
+  line-height: 1.6;
+}
