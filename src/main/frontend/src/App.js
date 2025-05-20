@@ -7,8 +7,7 @@ import UserProfilePage from './pages/UserProfilePage';
 import { fetchTestData } from './services/api';
 
 function App() {
-
-  const [backendData, setBackendData] = useState(null);
+const [backendData, setBackendData] = useState(null);
 
   useEffect(() => {
     const loadTestData = async () => {
@@ -36,8 +35,6 @@ function App() {
 
 
 
-        <Modal/>
-
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/profile" element={<UserProfilePage />} />
@@ -54,3 +51,5 @@ function App() {
     </Router>
   );
 }
+
+export default App;
