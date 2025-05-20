@@ -41,6 +41,12 @@ public class AdminController {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 실패");
 	}
 	
+	@GetMapping("/admin/test")
+	public String adminTestPage() {
+		log.info("@# /admin/test");	
+		return "admin/test";
+	}
+	
 	@GetMapping("/admin/secret")
 	@ResponseBody
 	public String secret(@RequestAttribute("adminId") String adminId) {
