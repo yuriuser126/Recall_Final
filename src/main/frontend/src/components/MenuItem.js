@@ -1,26 +1,21 @@
 // components/MenuItem.js
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import './MenuItem.css'; // 필요에 따라 스타일 추가
+import './MenuItem.css';
 
-function MenuItem({ item }) {
+const MenuItem = ({ item }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleMouseEnter = () => {
-    if (item.children) { // 자식 메뉴가 있을 때만 드롭다운 상태 변경
-      setIsDropdownOpen(true);
-    }
+    if (item.children) setIsDropdownOpen(true);
   };
-
   const handleMouseLeave = () => {
-    if (item.children) {
-      setIsDropdownOpen(false);
-    }
+    if (item.children) setIsDropdownOpen(false);
   };
 
   return (
     <li
-      className={`nav-item ${item.children ? 'dropdown' : ''}`}
+      className={`nav-item${item.children ? ' dropdown' : ''}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -28,11 +23,10 @@ function MenuItem({ item }) {
         <span>{item.label}</span>
         {item.children && <i className="bi bi-chevron-down toggle-dropdown"></i>}
       </Link>
-
       {item.children && isDropdownOpen && (
         <ul className="dropdown-menu">
-          {item.children.map((child, index) => (
-            <li key={index}>
+          {item.children.map((child, idx) => (
+            <li key={idx}>
               <Link to={child.link}>{child.label}</Link>
             </li>
           ))}
@@ -40,6 +34,6 @@ function MenuItem({ item }) {
       )}
     </li>
   );
-}
+};
 
 export default MenuItem;

@@ -1,5 +1,6 @@
 package com.boot.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,9 +12,11 @@ import org.springframework.http.ResponseEntity; // ResponseEntity 사용을 위�
 import org.springframework.stereotype.Controller; // 기존 어노테이션 유지
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin; // CORS 설정을 위해 추가
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping; // POST 요청 처리를 위해 추가
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody; // JSON 요청 바디를 받기 위해 추가
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,6 +33,8 @@ import com.boot.dto.PageDTO;
 import com.boot.service.DefactService;
 import com.boot.service.DefectListService;
 import com.boot.service.PageService;
+import com.boot.service.RecallService;
+import com.boot.service.RecallServiceImpl.XmlParserUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,6 +51,9 @@ public class ReactDefectController {
 	
 	@Autowired
 	private PageService pageService;
+	
+	@Autowired
+    private RecallService recallService;
 	
     // 기존 insertDefect (HTML 폼 제출용)
     @RequestMapping("/insertDefect")
@@ -173,69 +181,181 @@ public class ReactDefectController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
-  	//비밀번호 체크 화면
-  	@RequestMapping("/pwCheck")
-  	public String pwCheck(@RequestParam HashMap<String, String> param, Model model) {
-  		log.info("@# pwCheck()");
-  		log.info("@# param: "+param);
 
-  		return "pwCheck";
-  	}
-  	
   	//비밀번호 체크
-  	@RequestMapping(value ="/checkPassword", method=RequestMethod.POST)
-  	@ResponseBody
-  	public String checkPassword(@RequestBody Map<String, String> param){
-  		log.info("@# checkPassword()");
-  		String password = param.get("password");
-  		log.info("@# password: "+password);
-  		int id = Integer.parseInt(param.get("id")) ;
-  		log.info("@# id: "+id);
+    @PostMapping("/defect_pwcheck") // POST 요청을 받습니다.
+    public ResponseEntity<Boolean> checkPassword(@RequestBody Map<String, String> param){
+        log.info("@# checkPassword() 호출");
+        String password = param.get("password"); // 요청 바디에서 password 추출
+        // log.info("@# 입력 비밀번호: " + password); // 보안상 실제 비밀번호는 로그에 남기지 않는 것이 좋습니다.
+        Long id = Long.parseLong(param.get("id")); // 요청 바디에서 id 추출 및 Long으로 변환
+        int intid = Integer.parseInt(param.get("id")); // 요청 바디에서 id 추출 및 Long으로 변환
+        log.info("@# 요청 ID: " + id);
 
+        try {
+            // 서비스 계층을 통해 DB에서 해당 ID의 DTO를 가져옵니다.
+        	DefectListDTO dto = defectListservice.getById(intid);
+
+            // 비밀번호 비교 로직:
+            // 실제 프로젝트에서는 dto.getPassword()가 해싱된 비밀번호여야 합니다.
+            // 그리고 password.equals(dto.getPassword()) 대신 BCryptPasswordEncoder.matches() 등을 사용해야 합니다.
+            // 여기서는 제공해주신 JSP 로직과 최대한 유사하게 일단 String 비교로 두었습니다.
+            // ***주의: 이 부분은 보안상 매우 취약하므로 실제 서비스에서는 반드시 해싱된 비밀번호 비교로 변경해야 합니다.***
+            if (dto != null && password.equals(dto.getPassword())) {
+                return new ResponseEntity<>(true, HttpStatus.OK); // 비밀번호 일치 시 true 반환 (HTTP 200 OK)
+            } else {
+                return new ResponseEntity<>(false, HttpStatus.OK); // 비밀번호 불일치 시 false 반환 (HTTP 200 OK)
+            }
+        } catch (Exception e) {
+            log.error("@# 비밀번호 확인 중 오류 발생: {}", e.getMessage(), e);
+            // 오류 발생 시 500 Internal Server Error와 함께 false 반환
+            return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
   	
-  		DefectListDTO dto = defectListservice.getById(id);
-  		if (dto != null && password.equals(dto.getPassword())) {
-  			return "success";
-  		} else {
-  			return "fail";
-
-  		}
-
-  	}
+    // 신고 내역 수정 API
+    @PutMapping("/defect_modify") // PUT 요청을 받습니다. (RESTful API 관례)
+    public ResponseEntity<String> updateDefect(@RequestBody DefectListDTO DefectListDTO) {
+        log.info("@# updateDefect() 호출. DTO: {}", DefectListDTO);
+        try {
+            // 서비스 계층에서 수정 로직 수행
+        	defectListservice.modify(DefectListDTO); // modify 메소드 호출
+            return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("@# 결함 내역 수정 중 오류 발생: {}", e.getMessage(), e);
+            return new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
   	
-  	//수정 화면
-  	@RequestMapping("/defect_modify")
-  	public String defect_modify(@RequestParam HashMap<String, String> param, Model model) {
-  		log.info("@# defect_modify()");
-  		log.info("@# param: "+param);
-  		log.info("@# id: "+param.get("id"));
-  		DefectListDTO dto = defectListservice.defect_modify(param);
-  		model.addAttribute("defect_modify", dto);
+ // 신고 내역 삭제 API
+    @DeleteMapping("/defect_delete/{id}") // DELETE 요청을 받습니다.
+    public ResponseEntity<String> deleteDefect(@PathVariable("id") Long id) {
+        log.info("@# deleteDefect() 호출. ID: {}", id);
+        try {
+            // 서비스 계층에서 삭제 로직 수행
+        	defectListservice.delete(id); // remove 메소드 호출
+            return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("@# 결함 내역 삭제 중 오류 발생: {}", e.getMessage(), e);
+            return new ResponseEntity<>("FAIL", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+ // 리콜 목록 조회 API
+    @GetMapping("/recall_list")
+    public ResponseEntity<Map<String, Object>> getRecallList(Criteria cri) {
+        log.info("@# getRecallList() 호출. 현재 검색/페이징 조건: {}", cri);
+        try {
+            List<Defect_DetailsDTO> recallList = recallService.getAllRecallByCri(cri); // 서비스에서 목록 조회
+            int total = recallService.getRecallTotalCount(cri); // 서비스에서 전체 개수 조회
+            log.info("@# 전체 리콜 개수: {}", total);
 
-  		return "defect_modify";
-  	}
-  	
+            PageDTO pageMaker = new PageDTO(total, cri); // PageDTO 생성
 
-  	//수정
-  	@RequestMapping("/modify")
-  	public String modify(@RequestParam HashMap<String, String> param) {
-  		log.info("@# modify()");
-  		defectListservice.modify(param);
-  		
-  		return "redirect:defectList";
-  	}
-  	
-  	//삭제
-  	@RequestMapping("/delete")
-  	public String delete(@RequestParam HashMap<String, String> param) {
-  		log.info("@# delete()");
-  		log.info("@# param(보드넘버가 필요해용) "+param);
-  		log.info("@# param.get(\"id\") => "+param.get("id"));
+            Map<String, Object> response = new HashMap<>();
+            response.put("list", recallList);
+            response.put("pageMaker", pageMaker);
 
-  		defectListservice.delete(param);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("@# 리콜 목록 조회 중 오류 발생: {}", e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-//  		
-  		return "redirect:defectList";
-  	}
+    @GetMapping("/recall_detail/{id}")
+    public ResponseEntity<?> getRecallDetail(@PathVariable("id") Long id) {
+        log.info("@# getRecallDetail 호출. 리콜 ID: {}", id);
+        try {
+            Defect_DetailsDTO recall = recallService.getRecallById(id);
+
+            if (recall == null) {
+                log.warn("@# 리콜 ID {}에 대한 정보가 없습니다.", id);
+                return new ResponseEntity<>("리콜 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+            }
+
+            // 유사 리콜 ID 가져오기
+            List<Integer> similarIds = recallService.getSimilarRecallIds(id);
+
+            // React 컴포넌트가 예상하는 형식으로 데이터 구성
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("recall", recall);
+            responseData.put("similarIds", similarIds);
+
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("@# 리콜 상세 정보 조회 중 오류 발생 (ID: {}): {}", id, e.getMessage(), e);
+            return new ResponseEntity<>("리콜 상세 정보를 불러오는 데 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    // CSV 전체 다운로드 API
+    @GetMapping("/recall/downloadCsv")
+    public ResponseEntity<byte[]> downloadRecallCsv() {
+        try {
+            byte[] csvBytes = recallService.generateCsvReport(); // 서비스에서 CSV 데이터 생성
+            return ResponseEntity.ok()
+                    .header("Content-Disposition", "attachment; filename=\"recall_list.csv\"")
+                    .contentType(org.springframework.http.MediaType.parseMediaType("text/csv"))
+                    .body(csvBytes);
+        } catch (IOException e) {
+            log.error("@# CSV 파일 생성 또는 다운로드 중 오류 발생: {}", e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+//    // 엑셀 전체 다운로드 API
+//    @GetMapping("/recall/downloadExcel")
+//    public ResponseEntity<byte[]> downloadRecallExcel() {
+//        try {
+//            byte[] excelBytes = recallService.generateExcelReport(); // 서비스에서 엑셀 데이터 생성
+//            return ResponseEntity.ok()
+//                    .header("Content-Disposition", "attachment; filename=\"recall_list.xlsx\"")
+//                    .contentType(org.springframework.http.MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+//                    .body(excelBytes);
+//        } catch (IOException e) {
+//            log.error("@# 엑셀 파일 생성 또는 다운로드 중 오류 발생: {}", e.getMessage(), e);
+//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+    
+//	API -> DB 저장 메서드 (100건 테스트용)
+	@ResponseBody
+	@GetMapping("/recall/save")
+	public String saveToDb() throws Exception {
+		String cntntsId = "0301";
+		Criteria cri = new Criteria(1, 100); // 1페이지, 100건
+		String xml = recallService.fetchXmlFromApi(cri, cntntsId);
+		List<Defect_DetailsDTO> list = XmlParserUtil.parseToList(xml);
+		recallService.saveApiDataToDB(list);
+		return "DB 저장 완료 (" + list.size() + "건)";
+	}
+	
+	//	API -> DB 저장 메서드 (전체)
+	@ResponseBody
+	@GetMapping("/recall/saveAll")
+	public String saveAllToDb() throws Exception {
+		String cntntsId = "0301";
+		int perPage = 100;
+
+		// 1페이지 먼저 요청 → 전체 건수(totalCount) 파악
+		Criteria cri = new Criteria(1, perPage);
+		String firstXml = recallService.fetchXmlFromApi(cri, cntntsId);
+		int total = XmlParserUtil.getTotalCount(firstXml);
+		int totalPages = (int) Math.ceil((double) total / perPage);
+
+		int savedCount = 0;
+
+		for (int page = 1; page <= totalPages; page++) {
+			Criteria pageCri = new Criteria(page, perPage);
+			String xml = recallService.fetchXmlFromApi(pageCri, cntntsId);
+			List<Defect_DetailsDTO> list = XmlParserUtil.parseToList(xml);
+			recallService.saveApiDataToDB(list);
+			savedCount += list.size();
+			
+			log.info(">>> " + page + "페이지 처리 완료 (" + list.size() + "건)");
+		}
+		
+		System.out.println("totalCount: " + total);
+		return "전체 저장 완료! 총 " + savedCount + "건 저장됨.";
+	}
 }

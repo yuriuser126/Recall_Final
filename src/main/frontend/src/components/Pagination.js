@@ -1,11 +1,10 @@
 // components/Pagination.js
-import React from 'react';
 
-function Pagination({ pageMaker, onPageChange }) {
-  const { prev, startPage, endPage, next, cri } = pageMaker; // cri는 현재 페이징 기준 (pageNum, amount, type, keyword)
+const Pagination = ({ pageMaker, onPageChange }) => {
+  const { prev, startPage, endPage, next, cri } = pageMaker;
 
   const handlePageClick = (pageNum) => {
-    onPageChange({ ...cri, pageNum }); // 현재 검색 조건 유지하며 페이지 번호만 변경
+    onPageChange({ ...cri, pageNum });
   };
 
   return (
@@ -16,25 +15,23 @@ function Pagination({ pageMaker, onPageChange }) {
             <ul>
               {prev && (
                 <li className="paginate_button">
-                  <a href="#" onClick={(e) => { e.preventDefault(); handlePageClick(startPage - 1); }}>
+                  <button type="button" onClick={() => handlePageClick(startPage - 1)} className="link-button">
                     <i className="bi bi-chevron-left">이전</i>
-                  </a>
+                  </button>
                 </li>
               )}
-
               {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map((num) => (
-                <li key={num} className={`paginate_button ${cri.pageNum === num ? 'active' : ''}`}>
-                  <a href="#" onClick={(e) => { e.preventDefault(); handlePageClick(num); }}>
+                <li key={num} className={`paginate_button${cri.pageNum === num ? ' active' : ''}`}>
+                  <button type="button" onClick={() => handlePageClick(num)} className="link-button">
                     {num}
-                  </a>
+                  </button>
                 </li>
               ))}
-
               {next && (
                 <li className="paginate_button">
-                  <a href="#" onClick={(e) => { e.preventDefault(); handlePageClick(endPage + 1); }}>
+                  <button type="button" onClick={() => handlePageClick(endPage + 1)} className="link-button">
                     <i className="bi bi-chevron-right">다음</i>
-                  </a>
+                  </button>
                 </li>
               )}
             </ul>
@@ -43,6 +40,6 @@ function Pagination({ pageMaker, onPageChange }) {
       </div>
     </section>
   );
-}
+};
 
 export default Pagination;
