@@ -159,33 +159,33 @@ public class RecallController {
 //	}
 //	
 //	//	API -> DB 저장 메서드 (전체)
-//	@ResponseBody
-//	@GetMapping("/recall/saveAll")
-//	public String saveAllToDb() throws Exception {
-//		String cntntsId = "0301";
-//		int perPage = 100;
-//
-//		// 1페이지 먼저 요청 → 전체 건수(totalCount) 파악
-//		Criteria cri = new Criteria(1, perPage);
-//		String firstXml = recallService.fetchXmlFromApi(cri, cntntsId);
-//		int total = XmlParserUtil.getTotalCount(firstXml);
-//		int totalPages = (int) Math.ceil((double) total / perPage);
-//
-//		int savedCount = 0;
-//
-//		for (int page = 1; page <= totalPages; page++) {
-//			Criteria pageCri = new Criteria(page, perPage);
-//			String xml = recallService.fetchXmlFromApi(pageCri, cntntsId);
-//			List<Defect_DetailsDTO> list = XmlParserUtil.parseToList(xml);
-//			recallService.saveApiDataToDB(list);
-//			savedCount += list.size();
-//			
-//			log.info(">>> " + page + "페이지 처리 완료 (" + list.size() + "건)");
-//		}
-//		
-//		System.out.println("totalCount: " + total);
-//		return "전체 저장 완료! 총 " + savedCount + "건 저장됨.";
-//	}
+	@ResponseBody
+	@GetMapping("/recall/saveAll")
+	public String saveAllToDb() throws Exception {
+		String cntntsId = "0301";
+		int perPage = 100;
+
+		// 1페이지 먼저 요청 → 전체 건수(totalCount) 파악
+		Criteria cri = new Criteria(1, perPage);
+		String firstXml = recallService.fetchXmlFromApi(cri, cntntsId);
+		int total = XmlParserUtil.getTotalCount(firstXml);
+		int totalPages = (int) Math.ceil((double) total / perPage);
+
+		int savedCount = 0;
+
+		for (int page = 1; page <= totalPages; page++) {
+			Criteria pageCri = new Criteria(page, perPage);
+			String xml = recallService.fetchXmlFromApi(pageCri, cntntsId);
+			List<Defect_DetailsDTO> list = XmlParserUtil.parseToList(xml);
+			recallService.saveApiDataToDB(list);
+			savedCount += list.size();
+			
+			log.info(">>> " + page + "페이지 처리 완료 (" + list.size() + "건)");
+		}
+		
+		System.out.println("totalCount: " + total);
+		return "전체 저장 완료! 총 " + savedCount + "건 저장됨.";
+	}
 //
 ////	API 동기화 메서드 (100건 테스트용)
 //	@GetMapping("/recall/sync")
@@ -198,37 +198,37 @@ public class RecallController {
 //	}
 //	
 ////	API 동기화 메서드 (전체)
-//	@GetMapping("/recall/syncAll")
-//	@ResponseBody
-//	public String syncAllToDb() throws Exception {
-//		String cntntsId = "0301";
-//		int perPage = 100;
-//
-//		// 먼저 1페이지 호출해서 전체 개수 파악
-//		Criteria cri = new Criteria(1, perPage);
-//		String firstXml = recallService.fetchXmlFromApi(cri, cntntsId);
-//		int total = XmlParserUtil.getTotalCount(firstXml);
-//		int totalPages = (int) Math.ceil((double) total / perPage);
-//
-//		int inserted = 0, updated = 0, skipped = 0;
-//
-//		for (int page = 1; page <= totalPages; page++) {
-//			Criteria pageCri = new Criteria(page, perPage);
-//			String xml = recallService.fetchXmlFromApi(pageCri, cntntsId);
-//			List<Defect_DetailsDTO> list = XmlParserUtil.parseToList(xml);
-//
-//			SyncDTO result = recallService.syncApiDataWithDB(list);
-//
-//			inserted += result.getInserted();
-//			updated += result.getUpdated();
-//			skipped += result.getSkipped();
-//
-//			System.out.println(page + "페이지 완료: [insert " + result.getInserted()
-//					+ ", update " + result.getUpdated() + ", skip " + result.getSkipped() + "]");
-//		}
-//
-//		return "전체 동기화 완료! 총 insert: " + inserted + ", update: " + updated + ", skip: " + skipped;
-//	}
+	@GetMapping("/recall/syncAll")
+	@ResponseBody
+	public String syncAllToDb() throws Exception {
+		String cntntsId = "0301";
+		int perPage = 100;
+
+		// 먼저 1페이지 호출해서 전체 개수 파악
+		Criteria cri = new Criteria(1, perPage);
+		String firstXml = recallService.fetchXmlFromApi(cri, cntntsId);
+		int total = XmlParserUtil.getTotalCount(firstXml);
+		int totalPages = (int) Math.ceil((double) total / perPage);
+
+		int inserted = 0, updated = 0, skipped = 0;
+
+		for (int page = 1; page <= totalPages; page++) {
+			Criteria pageCri = new Criteria(page, perPage);
+			String xml = recallService.fetchXmlFromApi(pageCri, cntntsId);
+			List<Defect_DetailsDTO> list = XmlParserUtil.parseToList(xml);
+
+			SyncDTO result = recallService.syncApiDataWithDB(list);
+
+			inserted += result.getInserted();
+			updated += result.getUpdated();
+			skipped += result.getSkipped();
+
+			System.out.println(page + "페이지 완료: [insert " + result.getInserted()
+					+ ", update " + result.getUpdated() + ", skip " + result.getSkipped() + "]");
+		}
+
+		return "전체 동기화 완료! 총 insert: " + inserted + ", update: " + updated + ", skip: " + skipped;
+	}
 //	
 //	// 테스트용
 //	@GetMapping("/recall/similar/{id}")
