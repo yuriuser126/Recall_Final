@@ -97,7 +97,7 @@ public class ReactDefectController {
 
 
     // ID를 받아 defect_reports 테이블에서 데이터를 조회하여 반환하는 API (기존 유지)
-    @GetMapping("/selectDefectreport")
+    @GetMapping("/selectDefectreport{id}")
     public Defect_ReportsDTO ajaxSelectDefect(@RequestParam("id") int id) {
         log.info("@# AJAX 요청 id => " + id);
         List<Defect_ReportsDTO> defectList = defactservice.selectDefectreport(id);
@@ -115,6 +115,26 @@ public class ReactDefectController {
         log.info("manufacturing_period: " + defect_DetailsDTO.getManufacturing_period());
         defactservice.insertDefectDetails(defect_DetailsDTO);
         return "redirect:main";
+    }
+
+    /**
+     * React용 결함 상세 정보 저장/수정 (검수 완료)
+     * POST /api/insertDefectDetails
+     * @param defect_DetailsDTO JSON body로 전달
+     * @return 저장 결과(성공/실패)
+     */
+    @PostMapping("/insertDefectDetails")
+    public ResponseEntity<?> insertDefectDetailsReact(@RequestBody Defect_DetailsDTO defect_DetailsDTO) {
+        log.info("[React] insertDefectDetails() 호출");
+        log.info("[React] defect_DetailsDTO => {}", defect_DetailsDTO);
+        log.info("[React] manufacturing_period: {}", defect_DetailsDTO.getManufacturing_period());
+        try {
+            defactservice.insertDefectDetails(defect_DetailsDTO);
+            return ResponseEntity.ok().body("success");
+        } catch (Exception e) {
+            log.error("[React] insertDefectDetails 오류", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
+        }
     }
 
     // ... (나머지 기존 메소드들은 그대로 유지) ...

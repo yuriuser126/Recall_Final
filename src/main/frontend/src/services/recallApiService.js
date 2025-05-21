@@ -39,6 +39,33 @@ export const fetchRecallDetail = async (id) => {
     }
 };
 
+/**
+ * 결함 상세 조회 (ID로)
+ */
+export const fetchDefectDetail = async (id) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/defect_detail/${id}`);
+        return response.data; // { defect: {...} }
+    } catch (error) {
+        console.error(`Failed to fetch defect detail for ID ${id}:`, error);
+        throw error;
+    }
+};
+
+/**
+ * 결함 상세 정보 저장/수정 (검수 완료)
+ */
+export const saveDefectDetails = async (formData) => {
+    try {
+        // formData는 객체 형태, 필요시 FormData로 변환
+        const response = await axios.post(`${API_BASE_URL}/insertDefectDetails`, formData);
+        return response.data;
+    } catch (error) {
+        console.error('Failed to save defect details:', error);
+        throw error;
+    }
+};
+
 // CSV 전체 다운로드 함수
 export const downloadRecallCsv = async () => {
     try {
@@ -81,6 +108,24 @@ export const downloadRecallExcel = async () => {
         window.URL.revokeObjectURL(url); // URL 해제
     } catch (error) {
         console.error("Failed to download Excel:", error);
+        throw error;
+    }
+};
+
+/**
+ * ID로 결함신고 상세 조회
+ * @param {number|string} id
+ * @returns {Promise<Object>} 결함신고 상세 데이터
+ */
+export const fetchDefectReportById = async (id) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/selectDefectreport`, { params: { id } });
+        return response.data;
+    } catch (error) {
+        if (error.response && error.response.status === 404) {
+            return null; // 데이터 없음
+        }
+        console.error(`Failed to fetch defect report for ID ${id}:`, error);
         throw error;
     }
 };
