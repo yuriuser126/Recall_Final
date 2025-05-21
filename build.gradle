@@ -39,6 +39,7 @@ dependencies {
 	implementation 'org.apache.poi:poi:5.2.3'
 	implementation 'org.apache.poi:poi-ooxml:5.2.3' //엑셀파일 다운로드 위해 추가
 	implementation 'org.springframework.boot:spring-boot-starter-web' //aws 배포
+	implementation 'org.postgresql:postgresql:42.6.0'  // 최신 버전으로 맞추기
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5' //jwt
 	implementation 'javax.servlet:javax.servlet-api:4.0.1'
 	compileOnly 'org.projectlombok:lombok'
